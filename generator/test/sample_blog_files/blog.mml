@@ -1,0 +1,141 @@
+~sec[l=1] Page Heading
+
+This is a paragraph under a main page heading.
+
+~sec[l=2] Sub Heading ~eval{(-> (info) (get :test)}
+
+This is a sub heading with a dynamic title which is the heading number
+
+~sec[l=2] Sub Heading ~eval{(-> (info) (get :cur_header) (get 1))}
+
+This is a sub heading with a dynamic title which is the heading number, but only using the second part
+
+~sec[l=2;id=cust_id] Sub Heading ~eval{{(-> (info) (get :cur_header) (get 0))}
+
+This is a sub heading with a dynamic title which is the heading number, but only using the first part
+
+~sec[l=2] Sub Heading ~eval{{(-> (info) (get :cur_header) (get 3000))}
+
+This is a sub heading with a dynamic title which is the heading number. It is using the 3000th part,
+which doesn't exist. However, if it did exist, then it would be "0" so we're returning 0.
+
+~code[lang=js]
+alert('Custom JavaScript embedded in the code!)'
+~code~
+
+~code[lang=js;runnable]
+console.log('Click "Play" to run me!)'
+~code~
+
+~code[lang=js;delim=END_DELIM]
+#include <iostream>
+
+int main(int argc, char** argv) {
+  std::cout << "This is sample C++ code\n";
+  std::cout << "You can specify a custom delimeter to end the code\n";
+  std::cout << "That way you can make sure there isn't a collision, such as if you print \"~code~\" in your program\n";
+  return 0;
+}
+~END_DELIM~
+
+~pre
+This is general preformatted text.
+    It gets rendered however it's typed
+~pre~
+
+~math[fmt=latex]
+\sum_{i=0}^{15}{35*\frac{x}{y}}
+~math~
+
+~pre{\\~} will render the \~ symbol. ~pre{\\\\} will render the \\ symbol.
+
+To ~b{bold} a word we use the ~pre{b\{\}} tag. To ~i{italicize} a word we use the ~pre{i\{\}} tag.
+
+Tags that are followed by opening parenthesis will end after a closing parenthesis. If you don't want
+a parenthesis to end it, then escape it with ~pre{\\} (this does mean that ~pre{\\\\} is needed to
+for a non-escaped backslash).
+
+Tags that are followed by a space will continue to the end of the line and use that as it's parameter.
+
+Tags that are followed by a newline will continue until they see ~pre{~<tagname>~} (Note that args do
+not need to be repeated).
+
+Tags that are followed by a tilde (\~) will end immediately.
+
+When consuming to the end of the line or consuming multiple lines, escaping will be ignored, which
+means there's no need to escape backslashes, parenthesis, or tildes.
+
+To ~link[url=https://google.com](make a link) we use the \~link\~ tag to have the link be the text, or
+we use the \~link() tag for custom text.
+
+~link[url=https://google.com]~
+
+The \~ref tag can reference part of the document, such as standard ids ~ref[elem=sec:1:1]~ or custom ids ~ref[elem=cust_id]~.
+
+~pre{~img[url=<url>]} will embed an image from a url. ~pre{~img[file=<file>]} will embed an image from a file.
+Note that when generating HTML output, file images will be embedded using a data tag, so the image file
+will be part of the HTML file.
+
+~dataset[file=sample_data.csv;id=dataset_id]~
+
+Use ~pre{dataset[file=<file>]} to embed datasets. These are not rendered, just loaded for reference.
+
+~graph[type=line;x=Age;y=Salary;data=my_data]~
+~graph[type=bar;x=Name;y=Salary;data=my_data]~
+
+Use ~pre{~graph[type=<type>;x=<column>;y=<column>;data=<dataset_id>]~} to draw a graph.
+
+~fig
+~graph[type=line;x=Age;y=Salary;data=my_data]~
+~caption Salary by Age
+~fig~
+
+Use ~pre{~fig} and ~pre{~caption} to caption a graph or an image
+
+Use ~pre{~include[doc=<doc>]~} to include another document into the current document.
+Use ~pre{~link[doc=<doc>]~} to link to another document from the current document. This will
+put the other document into the build pipeline and generate a link to that document.
+
+~include[doc=subdoc.mml]~
+~include[doc=linkdoc.mml]~
+
+Use ~pre{~link[docs=<folder>;?paginate=<num>;?search=<yes/no>]} to include links to all of the
+documents in a folder and to do pagination for those links. Use the search option to enable searching
+if the output format supports it.
+
+~link[docs=posts/;paginate=5;search=yes]~
+
+Use ~pre{~include[docs=<folder>]~} to include all of the documents in a folder.
+~include[docs=posts/]~
+
+Use ~pre{~code[file=main.cpp]~} to include code from a file. Language will be guessed from the
+file extension unless you specify a language manually.
+~code[file=main.cpp]~
+
+To render something with Graphviz/Gephi, use ~pre{~dot[file=<file>]~}
+~dot[file=test.dot]~
+
+Alternatively, the dot code can be inlined with just ~pre{~dot}
+~dot
+graph input_devices_graph
+{
+        "Input Devices" -- "Keyboard";
+        "Input Devices" -- "Mouse";
+        "Input Devices" -- "Joystick";
+        "Input Devices" -- "Scanner";
+}
+~dot~
+
+For UML, we can use the ~pre{~uml} tag to render with PlantUML.
+
+~uml[file=plant.json]~
+
+To do an APA, MPL or similar citation use ~pre{~cite[id=<source_id>]~}. It will then use the style
+tied to the source in the bibliography. For the bibliography, use the ~pre{~bibliography} tag, and fill
+it with ~pre{~source} tags.
+~cite[source=source_id]~
+
+~bibliography[style=apa;title=References]
+~source[id=source_id;author=John Doe;author=Jane Doe;title="My book; a \"memorium\""]~
+~source[id=cal;author=Edward Reingold;author=Nachum Dershowltz;title="Calendrical calculations: The ultimate edition";pubInfo=Cambridge University Press;year=2018]~
+~bibliography~

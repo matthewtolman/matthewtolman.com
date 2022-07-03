@@ -1,0 +1,63 @@
+---
+# Use LLVM for the (few) options not specified
+Language: Cpp
+BasedOnStyle: Google
+IndentWidth: 2
+DeriveLineEnding: false
+UseCRLF: false
+AlignConsecutiveDeclarations: true
+AlignConsecutiveAssignments: true
+AlignOperands: Align
+AllowShortLambdasOnASingleLine: All
+AlignConsecutiveMacros: true
+AlignAfterOpenBracket: Align
+AlignEscapedNewlines: Right
+AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: false
+BreakBeforeBraces: Custom
+BinPackArguments: false
+BinPackParameters: false
+AllowShortLambdasOnASingleLine: All
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: true
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterEnum: false
+  AfterFunction: false
+  AfterExternBlock: false
+  AfterNamespace: false
+  AfterObjCDeclaration: false
+  AfterStruct: false
+  AfterUnion: false
+  BeforeElse: true
+  BeforeCatch: true
+  SplitEmptyFunction: false
+  SplitEmptyNamespace: false
+  SplitEmptyRecord: false
+  IndentBraces: false
+  AfterControlStatement: Never
+ColumnLimit: 150
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+BreakStringLiterals: true
+NamespaceIndentation: All
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+PointerAlignment: Left
+ReflowComments: true
+SortIncludes: true
+SortUsingDeclarations: true
+SpaceAfterLogicalNot: false
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+#SpaceBeforeParens: ControlStatements
+SpacesInContainerLiterals: true
+SpacesInSquareBrackets: true
+Standard: c++17
