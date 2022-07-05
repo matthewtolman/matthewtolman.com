@@ -22,7 +22,7 @@ set(SRCS
         "${CMAKE_BINARY_DIR}/version-dummy.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/generator/version.h"
         generator/src/pipeline.cpp generator/src/files.cpp generator/src/files.h generator/src/str_utils.cpp generator/src/str_utils.h)
-set(TEST_SRCS generator/test/parse.cpp generator/test/cli_args.cpp generator/test/files.cpp)
+set(TEST_SRCS generator/test/parse.cpp generator/test/cli_args.cpp generator/test/files.cpp generator/test/str_utils.cpp)
 add_executable(generator ${SRCS} generator/main.cpp)
 add_executable(generator_tests generator/test.cpp ${SRCS} ${TEST_SRCS})
 

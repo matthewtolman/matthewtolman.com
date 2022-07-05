@@ -1,7 +1,7 @@
 #include "parse.hpp"
 #include "str_utils.h"
 
-using namespace generator::str_utils;
+using namespace str_utils;
 
 enum class TOKEN_TYPE {
   CONTENT,
