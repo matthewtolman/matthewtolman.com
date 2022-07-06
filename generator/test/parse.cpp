@@ -1,6 +1,7 @@
 #include "doctest.h"
 #include "parse.hpp"
 #include <ostream>
+#include "str_utils.h"
 
 std::ostream& operator<<(std::ostream& os, std::shared_ptr<std::string> ptr) {
   if (!ptr) {
@@ -167,7 +168,7 @@ only content)STR");
         CHECK_EQ(tag.origText, *str);
         CHECK_EQ(tag.tagName, "tag");
         CHECK(tag.props.empty());
-        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[0]).content, "my content");
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 0 ]).content, "my content");
       }
 
       SUBCASE("Braces - escaped") {
@@ -183,47 +184,66 @@ only content)STR");
         CHECK_EQ(tag.origText, *str);
         CHECK_EQ(tag.tagName, "tag");
         CHECK(tag.props.empty());
-        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[0]).content, "my content\\} but Escaped!");
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 0 ]).content, "my content\\} but Escaped!");
       }
 
-      SUBCASE("End Of File") {
-        const auto *str = R"STR(~tag my content})STR";
+      SUBCASE("Braces - nested") {
+        auto str = std::make_shared<std::string>(R"STR(~tag{my content ~abc{test} but Nested!})STR");
         auto res = generator::parse::mml::parse(str);
         CHECK(holds_alternative<generator::parse::mml::Document>(res));
         auto doc = std::get<generator::parse::mml::Document>(res);
         CHECK_EQ(doc.elements.size(), 1);
-        CHECK_EQ(*doc.origText, str);
+        CHECK_EQ(doc.origText, str);
         CHECK(holds_alternative<generator::parse::mml::Tag>(doc.elements[ 0 ]));
 
         auto tag = std::get<generator::parse::mml::Tag>(doc.elements[ 0 ]);
-        CHECK_EQ(tag.origText, str);
+        CHECK_EQ(tag.origText, *str);
         CHECK_EQ(tag.tagName, "tag");
         CHECK(tag.props.empty());
-        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[0]).content, "my content}");
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 0 ]).content, "my content ");
+        CHECK_EQ(std::get<generator::parse::mml::Tag>(tag.content.value()[ 1 ]).origText, "~abc{test}");
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 2 ]).content, " but Nested!");
       }
 
-      SUBCASE("End Of Line") {
-        auto str = std::string(R"STR(~tag my content}
-))STR");
+      SUBCASE("Braces - nested") {
+        auto str = std::make_shared<std::string>(R"STR(~tag{my content ~abc{test} but Nested!})STR");
         auto res = generator::parse::mml::parse(str);
         CHECK(holds_alternative<generator::parse::mml::Document>(res));
         auto doc = std::get<generator::parse::mml::Document>(res);
-        CHECK_EQ(doc.elements.size(), 2);
-        CHECK_EQ(*doc.origText, str);
+        CHECK_EQ(doc.elements.size(), 1);
+        CHECK_EQ(doc.origText, str);
         CHECK(holds_alternative<generator::parse::mml::Tag>(doc.elements[ 0 ]));
 
         auto tag = std::get<generator::parse::mml::Tag>(doc.elements[ 0 ]);
-        CHECK_EQ(tag.origText, "~tag my content}");
+        CHECK_EQ(tag.origText, *str);
         CHECK_EQ(tag.tagName, "tag");
         CHECK(tag.props.empty());
-        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[0]).content, "my content}");
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 0 ]).content, "my content ");
+        CHECK_EQ(std::get<generator::parse::mml::Tag>(tag.content.value()[ 1 ]).origText, "~abc{test}");
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 2 ]).content, " but Nested!");
+      }
+
+      SUBCASE("Braces escaped nested") {
+        auto str = std::make_shared<std::string>(R"STR(~tag{my content \~abc{test} but Escaped!})STR");
+        auto res = generator::parse::mml::parse(str);
+        CHECK(holds_alternative<generator::parse::mml::Document>(res));
+        auto doc = std::get<generator::parse::mml::Document>(res);
+        CHECK_EQ(doc.elements.size(), 1);
+        CHECK_EQ(doc.origText, str);
+        CHECK(holds_alternative<generator::parse::mml::Tag>(doc.elements[ 0 ]));
+
+        auto tag = std::get<generator::parse::mml::Tag>(doc.elements[ 0 ]);
+        CHECK_EQ(tag.origText, *str);
+        CHECK_EQ(tag.tagName, "tag");
+        CHECK(tag.props.empty());
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 0 ]).content, "my content \\~abc{test} but Escaped!");
       }
 
       SUBCASE("Default end tag") {
         auto str = std::make_shared<std::string>(R"STR(~tag
 Test content
 Inside
-~tag~))STR");
+~tag~)STR");
         auto res = generator::parse::mml::parse(str);
         CHECK(holds_alternative<generator::parse::mml::Document>(res));
         auto doc = std::get<generator::parse::mml::Document>(res);
@@ -235,17 +255,49 @@ Inside
         CHECK_EQ(tag.origText, *str);
         CHECK_EQ(tag.tagName, "tag");
         CHECK(tag.props.empty());
-        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[0]).content, R"(Test content
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 0 ]).content, R"(Test content
 Inside)");
         CHECK_EQ(tag.rawContent.value(), R"(Test content
+Inside
+)");
+      }
+
+      SUBCASE("Default end tag with trailing text") {
+        auto str = std::make_shared<std::string>(R"STR(~tag
+Test content
+Inside
+~tag~ test
+~tag~
+test)STR");
+        auto res = generator::parse::mml::parse(str);
+        CHECK(holds_alternative<generator::parse::mml::Document>(res));
+        auto doc = std::get<generator::parse::mml::Document>(res);
+        CHECK_EQ(doc.elements.size(), 2);
+        CHECK_EQ(doc.origText, str);
+        CHECK(holds_alternative<generator::parse::mml::Tag>(doc.elements[ 0 ]));
+
+        auto tag = std::get<generator::parse::mml::Tag>(doc.elements[ 0 ]);
+        CHECK_EQ(tag.origText, R"STR(~tag
+Test content
+Inside
+~tag~ test
+~tag~)STR");
+        CHECK_EQ(tag.tagName, "tag");
+        CHECK(tag.props.empty());
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 0 ]).content, R"(Test content
 Inside)");
+        CHECK_EQ(tag.rawContent.value(), R"(Test content
+Inside
+~tag~ test
+)");
+        CHECK_EQ(std::get<generator::parse::mml::Content>(doc.elements[ 1 ]).content, "\ntest");
       }
 
       SUBCASE("Custom end tag") {
         auto str = std::make_shared<std::string>(R"STR(~tag[delim=CHERRY]
 Test content
 Inside
-~CHERRY~))STR");
+~CHERRY~)STR");
         auto res = generator::parse::mml::parse(str);
         CHECK(holds_alternative<generator::parse::mml::Document>(res));
         auto doc = std::get<generator::parse::mml::Document>(res);
@@ -257,18 +309,19 @@ Inside
         CHECK_EQ(tag.origText, *str);
         CHECK_EQ(tag.tagName, "tag");
         CHECK(!tag.props.empty());
-        CHECK_EQ(tag.props["delim"][0], "CHERRY");
-        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[0]).content, R"(Test content
+        CHECK_EQ(tag.props[ "delim" ][ 0 ], "CHERRY");
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 0 ]).content, R"(Test content
 Inside)");
         CHECK_EQ(tag.rawContent.value(), R"(Test content
-Inside)");
+Inside
+)");
       }
 
-      SUBCASE("Nested") {
+      SUBCASE("Nested block, brace") {
         auto str = std::make_shared<std::string>(R"STR(~tag[delim=CHERRY]
 Test content ~eval{hello}
 Inside
-~CHERRY~))STR");
+~CHERRY~)STR");
         auto res = generator::parse::mml::parse(str);
         CHECK(holds_alternative<generator::parse::mml::Document>(res));
         auto doc = std::get<generator::parse::mml::Document>(res);
@@ -280,17 +333,132 @@ Inside
         CHECK_EQ(tag.origText, *str);
         CHECK_EQ(tag.tagName, "tag");
         CHECK(!tag.props.empty());
-        CHECK_EQ(tag.props["delim"][0], "CHERRY");
-        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[0]).content, R"(Test content )");
+        CHECK_EQ(tag.props[ "delim" ][ 0 ], "CHERRY");
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 0 ]).content, R"(Test content )");
 
-        auto evalTag = std::get<generator::parse::mml::Tag>(tag.content.value()[1]);
-        CHECK_EQ(std::get<generator::parse::mml::Content>(evalTag.content.value()[0]).content, R"(hello)");
-        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[2]).content, R"(
+        auto evalTag = std::get<generator::parse::mml::Tag>(tag.content.value()[ 1 ]);
+        CHECK_EQ(std::get<generator::parse::mml::Content>(evalTag.content.value()[ 0 ]).content, R"(hello)");
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 2 ]).content, R"(
 Inside)");
 
         CHECK_EQ(evalTag.tagName, R"(eval)");
         CHECK_EQ(tag.rawContent.value(), R"(Test content ~eval{hello}
+Inside
+)");
+      }
+
+      SUBCASE("Nested block - block") {
+        auto str = std::make_shared<std::string>(R"STR(~tag[delim=CHERRY]
+Test content
+  ~eval
+    hello
+  ~eval~
+Inside
+~CHERRY~)STR");
+        auto res = generator::parse::mml::parse(str);
+        CHECK(holds_alternative<generator::parse::mml::Document>(res));
+        auto doc = std::get<generator::parse::mml::Document>(res);
+        CHECK_EQ(doc.elements.size(), 1);
+        CHECK_EQ(doc.origText, str);
+        CHECK(holds_alternative<generator::parse::mml::Tag>(doc.elements[ 0 ]));
+
+        auto tag = std::get<generator::parse::mml::Tag>(doc.elements[ 0 ]);
+        CHECK_EQ(tag.origText, *str);
+        CHECK_EQ(tag.tagName, "tag");
+        CHECK(!tag.props.empty());
+        CHECK_EQ(tag.props[ "delim" ][ 0 ], "CHERRY");
+        auto c = std::get<generator::parse::mml::Content>(tag.content.value()[ 0 ]).content;
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 0 ]).content, R"(Test content
+ )");
+
+        auto evalTag = std::get<generator::parse::mml::Tag>(tag.content.value()[ 1 ]);
+        auto h       = std::get<generator::parse::mml::Content>(evalTag.content.value()[ 0 ]).content;
+        CHECK_EQ(std::get<generator::parse::mml::Content>(evalTag.content.value()[ 0 ]).content, R"(    hello
+ )");
+        auto i = std::get<generator::parse::mml::Content>(tag.content.value()[ 2 ]).content;
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 2 ]).content, R"(
 Inside)");
+
+        CHECK_EQ(evalTag.tagName, R"(eval)");
+        CHECK_EQ(tag.rawContent.value(), R"(Test content
+  ~eval
+    hello
+  ~eval~
+Inside
+)");
+      }
+
+      SUBCASE("Nested block - same name block") {
+        auto str = std::make_shared<std::string>(R"STR(~tag
+Test content
+~tag
+hello
+~tag~
+Inside
+~tag~)STR");
+        auto res = generator::parse::mml::parse(str);
+        CHECK(holds_alternative<generator::parse::mml::Document>(res));
+        auto doc = std::get<generator::parse::mml::Document>(res);
+        CHECK_EQ(doc.elements.size(), 1);
+        CHECK_EQ(doc.origText, str);
+        CHECK(holds_alternative<generator::parse::mml::Tag>(doc.elements[ 0 ]));
+
+        auto tag = std::get<generator::parse::mml::Tag>(doc.elements[ 0 ]);
+        CHECK_EQ(tag.origText, *str);
+        CHECK_EQ(tag.tagName, "tag");
+        CHECK(tag.props.empty());
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 0 ]).content, R"(Test content)");
+
+        auto evalTag = std::get<generator::parse::mml::Tag>(tag.content.value()[ 1 ]);
+        CHECK_EQ(std::get<generator::parse::mml::Content>(evalTag.content.value()[ 0 ]).content, R"(hello)");
+        CHECK_EQ(std::get<generator::parse::mml::Content>(tag.content.value()[ 2 ]).content, R"(
+Inside)");
+
+        CHECK_EQ(evalTag.tagName, R"(tag)");
+        CHECK_EQ(tag.rawContent.value(), R"STR(Test content
+~tag
+hello
+~tag~
+Inside
+)STR");
+      }
+
+      SUBCASE("INVALID PARSES") {
+
+        SUBCASE("Nested block - line") {
+          auto str = std::make_shared<std::string>(R"STR(~tag[delim=CHERRY]
+Test content ~eval hello
+Inside
+          ~CHERRY~)STR");
+          auto res = generator::parse::mml::parse(str);
+          CHECK(holds_alternative<generator::parse::mml::ParseError>(res));
+        }
+
+        SUBCASE("End Of File") {
+          const auto* str = R"STR(~tag my content})STR";
+          auto        res = generator::parse::mml::parse(str);
+          CHECK(holds_alternative<generator::parse::mml::ParseError>(res));
+        }
+
+        SUBCASE("End Of File No Nested") {
+          const auto* str = R"STR(~tag my content ~tag~})STR";
+          auto        res = generator::parse::mml::parse(str);
+          CHECK(holds_alternative<generator::parse::mml::ParseError>(res));
+        }
+
+        SUBCASE("End Of Line") {
+          auto str = std::string(R"STR(~tag my content}
+        ))STR");
+          auto res = generator::parse::mml::parse(str);
+          CHECK(holds_alternative<generator::parse::mml::ParseError>(res));
+        }
+
+        SUBCASE("No newlines") {
+          auto str = std::string(R"STR(~tag my content ~tag~}
+        ))STR");
+          auto res = generator::parse::mml::parse(str);
+          CHECK(holds_alternative<generator::parse::mml::ParseError>(res));
+        }
       }
     }
   }

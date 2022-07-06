@@ -14,6 +14,11 @@ namespace generator::parse {
     };
 
     struct Tag {
+      enum class TYPE {
+        EOL,
+        BRACE,
+        BLOCK
+      } type;
       std::string_view origText;
       std::string_view tagName;
       std::map<std::string, std::vector<std::string_view>> props;

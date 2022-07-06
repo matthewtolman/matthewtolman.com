@@ -108,4 +108,66 @@ TEST_SUITE("str_utils") {
       CHECK_EQ(begin, str_utils::find_substr_start(string.begin(), string.end(), "hello"));
     }
   }
+
+  TEST_CASE("find_substr_followed_by_eof_or_newline") {
+    std::string string = R"STR(Hello world
+how are you?
+doing today)STR";
+
+    SUBCASE("Not Present") {
+      auto [begin, end] = str_utils::find_substr_followed_by_eof_or_newline(string.begin(), string.end(), "target");
+      CHECK_EQ(begin, string.end());
+      CHECK_EQ(end, string.end());
+    }
+
+    SUBCASE("No trailing newline") {
+      auto [begin, end] = str_utils::find_substr_followed_by_eof_or_newline(string.begin(), string.end(), "Hello");
+      CHECK_EQ(begin, string.end());
+      CHECK_EQ(end, string.end());
+    }
+
+    SUBCASE("trailing newline") {
+      auto [begin, end] = str_utils::find_substr_followed_by_eof_or_newline(string.begin(), string.end(), "you?");
+      CHECK_EQ(begin - string.begin(), 20);
+      CHECK_EQ(end - string.begin(), 24);
+    }
+
+    SUBCASE("end of file") {
+      auto [begin, end] = str_utils::find_substr_followed_by_eof_or_newline(string.begin(), string.end(), "day");
+      CHECK_EQ(begin - string.begin(), 33);
+      CHECK_EQ(end, string.end());
+    }
+  }
+
+  TEST_CASE("find_not_escaped_stack") {
+    SUBCASE("Plain") {
+      std::string string = "}{{}{{{}}{}}{}}{}{{}}}}";
+      auto        ch     = str_utils::find_not_escaped_stack(string.begin(), string.end(), '}', '{');
+      CHECK_EQ(ch - string.begin(), 0);
+    }
+
+    SUBCASE("Pairs") {
+      std::string string = "{{}{{{}}{}}{}}{}{{}}}}";
+      auto        ch     = str_utils::find_not_escaped_stack(string.begin(), string.end(), '}', '{');
+      CHECK_EQ(ch - string.begin(), 13);
+    }
+
+    SUBCASE("Escaped") {
+      std::string string = "\\}{{}{{{}}{}}{}}{}{{}}}}";
+      auto        ch     = str_utils::find_not_escaped_stack(string.begin(), string.end(), '}', '{');
+      CHECK_EQ(ch - string.begin(), 15);
+    }
+
+    SUBCASE("Escaped Pairs") {
+      std::string string = "{\\{}{{{}}{}}{}}{}{{}}}}";
+      auto        ch     = str_utils::find_not_escaped_stack(string.begin(), string.end(), '}', '{');
+      CHECK_EQ(ch - string.begin(), 3);
+    }
+
+    SUBCASE("Escaped With Escaped Pairs") {
+      std::string string = "{\\{\\}{{{}}{}}{}}{}{{}}}}";
+      auto        ch     = str_utils::find_not_escaped_stack(string.begin(), string.end(), '}', '{');
+      CHECK_EQ(ch - string.begin(), 15);
+    }
+  }
 }

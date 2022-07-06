@@ -1,20 +1,30 @@
 #include "parse.hpp"
+
+#include <stack>
+
 #include "str_utils.h"
+#include <variant_visit.h>
 
 using namespace str_utils;
+using namespace generator::parse::mml;
 
 enum class TOKEN_TYPE {
   CONTENT,
   TAG
 };
 
-static std::optional<generator::parse::mml::Element> parse_element(std::string::iterator& iter, const std::string::iterator& end);
+enum class ALLOWED_TAGS {
+  ALL,
+  BRACE_ONLY
+};
 
-static std::optional<std::vector<std::variant<generator::parse::mml::Content, generator::parse::mml::Tag>>> parse_elements(std::string::iterator& start, const std::string::iterator end) {
+static std::optional<Element> parse_element(std::string::iterator& iter, const std::string::iterator& end, ALLOWED_TAGS allowedTags = ALLOWED_TAGS::ALL);
+
+static std::optional<std::vector<std::variant<Content, Tag>>> parse_elements(std::string::iterator& start, const std::string::iterator end, ALLOWED_TAGS allowedTags = ALLOWED_TAGS::ALL) {
   auto       iter = start;
 
-  std::vector<generator::parse::mml::Element> res;
-  while(auto parsed = parse_element(iter, end)) {
+  std::vector<Element> res;
+  while(auto parsed = parse_element(iter, end, allowedTags)) {
     res.emplace_back(*parsed);
   }
 
@@ -25,7 +35,7 @@ static std::optional<std::vector<std::variant<generator::parse::mml::Content, ge
   return res;
 }
 
-static std::optional<generator::parse::mml::Element> parse_content(std::string::iterator& iter, const std::string::iterator& end) {
+static std::optional<Element> parse_content(std::string::iterator& iter, const std::string::iterator& end) {
   using namespace generator::parse::mml;
 
   if (iter == end) {
@@ -101,7 +111,11 @@ static std::optional<std::map<std::string, std::vector<std::string_view>>> parse
   return res;
 }
 
-static std::optional<generator::parse::mml::Element> parse_tag(std::string::iterator& iter, const std::string::iterator& end) {
+static std::optional<Element> parse_tag(
+    std::string::iterator& iter,
+    const std::string::iterator& end,
+    ALLOWED_TAGS allowedTags = ALLOWED_TAGS::ALL
+) {
   if (iter == end) {
     return std::nullopt;
   }
@@ -118,7 +132,8 @@ static std::optional<generator::parse::mml::Element> parse_tag(std::string::iter
   }
   auto tagName = range_to_view(tagNameStart, *tagNameEndOpt);
 
-  auto res = generator::parse::mml::Tag{
+  auto res = Tag{
+    Tag::TYPE::EOL,
     range_to_view(currentTextStart, iter),
     tagName,
     {},
@@ -157,30 +172,23 @@ static std::optional<generator::parse::mml::Element> parse_tag(std::string::iter
   }
   else if (*segStart == '{') {
     auto contentStart = segStart + 1;
-    auto contentEnd = find_not_escaped(contentStart, end, '}');
+    auto contentEnd = find_not_escaped_stack(segStart, end, '}', '{');
     if (contentEnd == end) {
       return std::nullopt;
     }
     iter = contentEnd + 1;
+    res.type = Tag::TYPE::BRACE;
     res.origText = range_to_view(currentTextStart, iter);
     res.rawContent = range_to_view(contentStart, contentEnd);
-    res.content = parse_elements(contentStart, contentEnd);
+    res.content = parse_elements(contentStart, contentEnd, ALLOWED_TAGS::BRACE_ONLY);
     return res;
   }
-  else if (*segStart == ' ') {
-    auto contentStart = segStart + 1;
-    auto contentEnd = std::find(contentStart, end, '\n');
-    iter = contentEnd;
-    res.origText = range_to_view(currentTextStart, iter);
-    res.rawContent = range_to_view(contentStart, contentEnd);
-    res.content = parse_elements(contentStart, contentEnd);
-    return res;
-  }
-  else {
+  else if (allowedTags == ALLOWED_TAGS::ALL) {
     auto contentStart = std::find(segStart, end, '\n');
     if (contentStart == end || contentStart + 1 == end) {
       return std::nullopt;
     }
+    res.type = Tag::TYPE::BLOCK;
     ++contentStart;
 
     auto endDelim = std::string(tagName);
@@ -191,32 +199,50 @@ static std::optional<generator::parse::mml::Element> parse_tag(std::string::iter
       }
     }
 
-    auto substr = std::string("\n~") + std::string(endDelim) + "~";
-    auto contentEnd = find_substr_start(contentStart, end, substr);
-    if (contentEnd == end) {
-      return std::nullopt;
+    res.content = std::vector<Element>{};
+    auto nextTagSpot = str_utils::find_after_newline_ws(contentStart, end, '~');
+    auto lastTagSpot = contentStart;
+    auto substr = std::string("~") + std::string(endDelim) + "~";
+    while(nextTagSpot != end) {
+      auto elems = parse_elements(lastTagSpot, nextTagSpot - 1);
+      if (elems) {
+        res.content->insert(res.content->end(), elems->begin(), elems->end());
+      }
+      else {
+        return std::nullopt;
+      }
+      if (str_utils::starts_with_trails_newline_ws(nextTagSpot, end, substr)) {
+        iter           = nextTagSpot + substr.size();
+        res.origText   = range_to_view(currentTextStart, iter);
+        res.rawContent = range_to_view(contentStart, nextTagSpot);
+        return res;
+      }
+      else {
+        auto tagEnd = nextTagSpot;
+        auto tag = parse_tag(tagEnd, end);
+        if (tagEnd == end || !tag.has_value()) {
+          return std::nullopt;
+        }
+        res.content->emplace_back(*tag);
+        lastTagSpot = tagEnd;
+        nextTagSpot = str_utils::find_after_newline_ws(tagEnd, end, '~');
+      }
     }
-
-    auto tagEnd = (contentEnd + substr.size());
-    iter = tagEnd == end ? tagEnd : tagEnd + 1;
-    res.origText = range_to_view(currentTextStart, iter);
-    res.rawContent = range_to_view(contentStart, contentEnd);
-    res.content = parse_elements(contentStart, contentEnd);
-    return res;
+    return std::nullopt;
   }
 
   return std::nullopt;
 }
 
-static std::optional<generator::parse::mml::Element> parse_element(std::string::iterator& iter, const std::string::iterator& end) {
+static std::optional<Element> parse_element(std::string::iterator& iter, const std::string::iterator& end, ALLOWED_TAGS allowedTags) {
   auto elem = parse_content(iter, end);
   if (elem.has_value()) {
     return elem;
   }
-  return parse_tag(iter, end);
+  return parse_tag(iter, end, allowedTags);
 }
 
-std::variant<generator::parse::mml::Document, generator::parse::mml::ParseError> generator::parse::mml::parse(std::shared_ptr<std::string> text) {
+std::variant<Document, ParseError> generator::parse::mml::parse(std::shared_ptr<std::string> text) {
   if (!text) {
     return ParseError{ParseError::ERR_CODE::NULL_INPUT};
   }
@@ -228,8 +254,13 @@ std::variant<generator::parse::mml::Document, generator::parse::mml::ParseError>
 
   auto       iter = text->begin();
   const auto end  = text->end();
+  auto allowedTags = ALLOWED_TAGS::ALL;
 
-  while(auto parsed = parse_element(iter, end)) {
+  while(auto parsed = parse_element(iter, end, allowedTags)) {
+    allowedTags = std::visit(visitor::overload{
+        [](const Content& content) { return str_utils::ends_with_newline_ws(content.content) ? ALLOWED_TAGS::ALL : ALLOWED_TAGS::BRACE_ONLY; },
+        [](const Tag& tag) { return str_utils::ends_with_newline_ws(tag.origText) || tag.type == Tag::TYPE::BLOCK ? ALLOWED_TAGS::ALL : ALLOWED_TAGS::BRACE_ONLY; }
+    }, *parsed);
     res.elements.emplace_back(*parsed);
   }
 
@@ -240,10 +271,10 @@ std::variant<generator::parse::mml::Document, generator::parse::mml::ParseError>
   return res;
 }
 
-std::variant<generator::parse::mml::Document, generator::parse::mml::ParseError> generator::parse::mml::parse(const std::string& text) {
+std::variant<Document, ParseError> generator::parse::mml::parse(const std::string& text) {
   return parse(std::make_shared<std::string>(text));
 }
 
-std::variant<generator::parse::mml::Document, generator::parse::mml::ParseError> generator::parse::mml::parse(const char* text) {
+std::variant<Document, ParseError> generator::parse::mml::parse(const char* text) {
   return parse(std::make_shared<std::string>(text));
 }
