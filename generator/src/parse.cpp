@@ -1,9 +1,10 @@
 #include "parse.hpp"
 
+#include <variant_visit.h>
+
 #include <stack>
 
-#include "str_utils.h"
-#include <variant_visit.h>
+#include "str_utils.hpp"
 
 using namespace str_utils;
 using namespace generator::parse::mml;

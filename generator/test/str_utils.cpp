@@ -1,5 +1,6 @@
+#include "str_utils.hpp"
+
 #include "doctest.h"
-#include "str_utils.h"
 
 TEST_SUITE("str_utils") {
   TEST_CASE("find_not_escaped") {

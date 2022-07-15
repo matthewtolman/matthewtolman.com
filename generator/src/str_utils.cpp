@@ -1,4 +1,4 @@
-#include "str_utils.h"
+#include "str_utils.hpp"
 
 std::string::iterator str_utils::find_not_escaped(std::string::iterator start, std::string::iterator end, char look, char escape) {
   auto possibleEnd = std::find(start, end, look);
@@ -145,4 +145,12 @@ bool str_utils::ends_with_newline_ws(const std::string_view& sv) {
     if (*iter == '\n') return true;
   }
   return *iter == '\n';
+}
+std::strong_ordering str_utils::bin_compare(const std::string& left, const std::string& right) {
+  for(auto li = left.begin(), ri = right.begin(); li != left.end() && ri != right.end(); ++li, ++ri) {
+    if (*li != *ri) {
+      return *li <=> *ri;
+    }
+  }
+  return left.size() <=> right.size();
 }

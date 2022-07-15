@@ -1,7 +1,9 @@
-#include "doctest.h"
 #include "parse.hpp"
+
 #include <ostream>
-#include "str_utils.h"
+
+#include "doctest.h"
+#include "str_utils.hpp"
 
 std::ostream& operator<<(std::ostream& os, std::shared_ptr<std::string> ptr) {
   if (!ptr) {
