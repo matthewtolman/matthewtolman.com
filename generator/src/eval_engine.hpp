@@ -8,6 +8,7 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include <list>
 #include "str_utils.hpp"
 
 namespace generator::eval {
@@ -22,6 +23,7 @@ namespace generator::eval {
   bool operator>=(const CLASS& other) const { return (*this <=> other) >= 0; };
 
   struct Symbol {
+    std::optional<std::string> ns;
     std::string token;
 
     auto operator<=>(const Symbol& other) const { return str_utils::bin_compare(token, other.token); }
@@ -36,13 +38,23 @@ namespace generator::eval {
     EVAL_ENGINE_DEF_OPS(Atom)
   };
 
-  struct Quote{};
-
   struct Value;
+
+  struct Frame {
+    std::shared_ptr<std::map<std::string, Value>> current = std::make_shared<std::map<std::string, Value>>();
+    std::shared_ptr<Frame> parent = nullptr;
+
+    Frame() = default;
+    Frame(std::shared_ptr<std::map<std::string, Value>> current, std::shared_ptr<Frame> parent) : current(current), parent(parent) {}
+    std::shared_ptr<Frame> add_root_frame(std::shared_ptr<Frame> frame);
+  };
+
   struct Func {
-    std::vector<Symbol>   args;
-    std::optional<Symbol> varArgs;
-    std::vector<Value>    statements;
+    std::vector<Symbol>           args;
+    std::optional<Symbol>         varArgs;
+    std::vector<Value>            statements;
+    std::optional<std::string>    desc;
+    std::shared_ptr<Frame>        frame;
 
     std::strong_ordering operator<=>(const Func& other) const;
     EVAL_ENGINE_DEF_OPS(Func)
@@ -51,57 +63,10 @@ namespace generator::eval {
   struct Value {
     using NativeFunc      = std::function<Value(const std::vector<Value>&)>;
     using NativeFuncTuple = std::tuple<std::string, NativeFunc>;
-    std::optional<std::variant<Func, NativeFuncTuple, std::map<Value, Value>, std::vector<Value>, Quote, std::string, Atom, Symbol, double, bool>>
+    std::optional<std::variant<Func, NativeFuncTuple, std::map<Value, Value>, std::list<Value>, std::vector<Value>, std::string, Atom, Symbol, double, bool>>
         val;
 
-    std::strong_ordering operator<=>(const Value& other) const {
-      if (!val.has_value()) {
-        return other.val.has_value() ? std::strong_ordering::less : std::strong_ordering::equal;
-      }
-      return std::visit(
-          visitor::overload{
-              [](const NativeFuncTuple& left, const NativeFuncTuple& right) -> std::strong_ordering {
-                return str_utils::bin_compare(std::get<0>(left), std::get<0>(right));
-              },
-              [](const std::map<Value, Value>& left, const std::map<Value, Value>& right) -> std::strong_ordering {
-                for (auto lIter = left.begin(), rIter = right.begin(); lIter != left.end() && rIter != right.end(); ++lIter, ++rIter) {
-                  auto cmp = lIter->first <=> rIter->first;
-                  if (lIter->first != rIter->first) {
-                    return lIter->first <=> rIter->first;
-                  }
-                  if (lIter->second != rIter->second) {
-                    return lIter->second <=> rIter->second;
-                  }
-                }
-                return left.size() <=> right.size();
-              },
-              [](const std::vector<Value>& left, const std::vector<Value>& right) -> std::strong_ordering {
-                for (auto lIter = left.begin(), rIter = right.begin(); lIter != left.end() && rIter != right.end(); ++lIter, ++rIter) {
-                  if (*lIter != *rIter) {
-                    return *lIter <=> *rIter;
-                  }
-                }
-                return left.size() <=> right.size();
-              },
-              [](const std::string& left, const std::string& right) -> std::strong_ordering { return str_utils::bin_compare(left, right); },
-              [](const Atom& left, const Atom& right) -> std::strong_ordering { return left <=> right; },
-              [](const Symbol& left, const Symbol& right) -> std::strong_ordering { return left <=> right; },
-              [](const double& left, const double& right) -> std::strong_ordering {
-                if (left < right) {
-                  return std::strong_ordering::less;
-                }
-                else if (left > right) {
-                  return std::strong_ordering::greater;
-                }
-                return std::strong_ordering::equal;
-              },
-              [](const int64_t& left, const int64_t& right) -> std::strong_ordering { return left <=> right; },
-              [](const bool& left, const bool& right) -> std::strong_ordering { return static_cast<int>(left) <=> static_cast<int>(right); },
-              [ & ](const auto& thisVal, const auto& oVal) -> std::strong_ordering { return val->index() <=> other.val->index(); },
-          },
-          *val,
-          *other.val);
-    }
+    std::strong_ordering operator<=>(const Value& other) const;
     EVAL_ENGINE_DEF_OPS(Value)
 
     template<typename T>
@@ -115,7 +80,6 @@ namespace generator::eval {
                     || std::is_same_v<R, double> || std::is_same_v<R, float>) {
         return std::visit(
             visitor::overload{
-              [this](int64_t v) -> std::optional<R> { return static_cast<R>(v); },
               [this](double v) -> std::optional<R>{ return static_cast<R>(v); },
               [this](bool v) -> std::optional<R> { return static_cast<R>(v ? 1 : 0); },
               [](const auto&) -> std::optional<R> { return std::nullopt; }
@@ -127,8 +91,7 @@ namespace generator::eval {
         return std::visit(
             visitor::overload{
                 [this](bool v) -> std::optional<bool> { return v; },
-                [this](int64_t v) -> std::optional<bool> { return v != 0; },
-                [this](bool v) -> std::optional<bool> { return v != 0.0; },
+                [this](double v) -> std::optional<bool> { return v != 0.0; },
                 [](const auto &) -> std::optional<bool> { return std::nullopt; }},
             *val);
       }
@@ -200,6 +163,8 @@ namespace generator::eval {
     }
 
     bool has_value() const { return val.has_value(); }
+
+    std::string to_string() const;
   };
 
   using NativeFunc = Value::NativeFuncTuple;
@@ -209,7 +174,8 @@ std::ostream& operator<<(std::ostream& os, const generator::eval::Value& val);
 
 namespace  generator::eval {
   class Context {
-    std::map<Symbol, Value> symbols = {};
+    std::map<std::string, std::map<std::string, Value>> symbols = {};
+    std::map<std::string, std::vector<std::string>> fallbackNs = {};
     std::stringstream buf;
     public:
       struct ParseError {
@@ -225,5 +191,11 @@ namespace  generator::eval {
 
       std::string str();
       std::string buffer() const;
+      std::string current_namespace() const;
+
+    private:
+      Value evalValue(const Value& val, std::shared_ptr<Frame> frame);
+      Value call(const Value& func, const std::vector<Value>& params, std::shared_ptr<Frame> frame);
+      std::shared_ptr<Frame> make_frame(std::shared_ptr<Frame> parent);
   };
 }  // namespace generator::eval

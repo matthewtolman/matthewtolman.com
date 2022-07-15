@@ -19,7 +19,6 @@ enum class TOKEN_TYPE {
   BRACE_END,
   NUMBER,
   ATOM,
-  QUOTE,
   SYMBOL,
   STRING,
   NIL,
@@ -33,25 +32,303 @@ struct Token {
 };
 }
 
+std::shared_ptr<generator::eval::Frame> generator::eval::Frame::add_root_frame(std::shared_ptr<Frame> frame) {
+  auto newFrame = std::make_shared<Frame>(current, nullptr);
+  auto newPrevLayer = newFrame;
+  for(auto nextLayer = parent; nextLayer != nullptr; nextLayer = nextLayer->parent) {
+    auto newLayer = std::make_shared<Frame>(nextLayer->current, nullptr);
+    newPrevLayer->parent = newLayer;
+    newPrevLayer = newLayer;
+  }
+  newPrevLayer->parent = frame;
+  return newFrame;
+}
+std::strong_ordering
+generator::eval::Value::operator<=>(const generator::eval::Value &other) const {
+  if (!val.has_value()) {
+    return other.val.has_value() ? std::strong_ordering::less : std::strong_ordering::equal;
+  }
+  return std::visit(
+      visitor::overload{
+          [](const NativeFuncTuple& left, const NativeFuncTuple& right) -> std::strong_ordering {
+            return str_utils::bin_compare(std::get<0>(left), std::get<0>(right));
+          },
+          [](const std::map<Value, Value>& left, const std::map<Value, Value>& right) -> std::strong_ordering {
+            for (auto lIter = left.begin(), rIter = right.begin(); lIter != left.end() && rIter != right.end(); ++lIter, ++rIter) {
+              auto cmp = lIter->first <=> rIter->first;
+              if (lIter->first != rIter->first) {
+                return lIter->first <=> rIter->first;
+              }
+              if (lIter->second != rIter->second) {
+                return lIter->second <=> rIter->second;
+              }
+            }
+            return left.size() <=> right.size();
+          },
+          [](const std::vector<Value>& left, const std::vector<Value>& right) -> std::strong_ordering {
+            for (auto lIter = left.begin(), rIter = right.begin(); lIter != left.end() && rIter != right.end(); ++lIter, ++rIter) {
+              if (*lIter != *rIter) {
+                return *lIter <=> *rIter;
+              }
+            }
+            return left.size() <=> right.size();
+          },
+          [](const std::string& left, const std::string& right) -> std::strong_ordering { return str_utils::bin_compare(left, right); },
+          [](const Atom& left, const Atom& right) -> std::strong_ordering { return left <=> right; },
+          [](const Symbol& left, const Symbol& right) -> std::strong_ordering { return left <=> right; },
+          [](const double& left, const double& right) -> std::strong_ordering {
+            if (left < right) {
+              return std::strong_ordering::less;
+            }
+            else if (left > right) {
+              return std::strong_ordering::greater;
+            }
+            return std::strong_ordering::equal;
+          },
+          [](const int64_t& left, const int64_t& right) -> std::strong_ordering { return left <=> right; },
+          [](const bool& left, const bool& right) -> std::strong_ordering { return static_cast<int>(left) <=> static_cast<int>(right); },
+          [ & ](const auto& thisVal, const auto& oVal) -> std::strong_ordering { return val->index() <=> other.val->index(); },
+      },
+      *val,
+      *other.val);
+}
+
+std::string generator::eval::Value::to_string() const {
+  std::stringstream ss;
+  ss << *this;
+  return ss.str();
+}
+
+static generator::eval::Value native_str(const std::vector<generator::eval::Value>& v) {
+  std::stringstream ss;
+  for (const auto& val : v) {
+    if (!val.val.has_value()) {
+      ss << "";
+    }
+    else {
+      std::visit(
+          visitor::overload{
+              [&](const std::string& s) {
+                ss << s;
+              },
+              [&](const auto& v) {
+                ss << generator::eval::Value{v};
+              }
+          }, val.val.value()
+      );
+    }
+  }
+  return generator::eval::Value{ss.str()};
+}
+
+static generator::eval::Value native_add(const std::vector<generator::eval::Value>& v) {
+  if (v.empty()) {
+    throw std::runtime_error("Expected at least one argument to __native__.add!");
+  }
+  double sum = 0;
+  std::for_each(v.begin(), v.end(), [&sum](const auto& val){
+    auto num = val.template cast<double>();
+    if (!num) {
+      throw std::runtime_error("Cannot cast value '" + val.to_string() + "' to number");
+    }
+    sum += *num;
+  });
+  return {sum};
+}
+
+static generator::eval::Value invert_sign(const std::vector<generator::eval::Value>& v) {
+  if (v.size() != 1) {
+    throw std::runtime_error("Expected arity of one argument to __native__.invert-sign!");
+  }
+  auto val = v[0].cast<double>();
+  if (!val) {
+    throw std::runtime_error("Cannot cast value '" + v[0].to_string() + "' to number");
+  }
+  return {-(*val)};
+}
+
 generator::eval::Context::Context() {
-  symbols[{"_core.buf"}] = Value{std::make_tuple<std::string, Value::NativeFunc>("core_buf", [&](const std::vector<Value>& v) -> Value {
+  symbols["__native__"] = {};
+  symbols["__native__"]["buf"] = Value{std::make_tuple<std::string, Value::NativeFunc>("__buf", [&](const std::vector<Value>& v) -> Value {
     for (const auto& val : v) {
-      buf << val << "\n";
+      buf << std::visit(
+          visitor::overload{
+              [&](const std::string& s) { return s; },
+              [&](const auto& v) { return Value{v}.to_string(); }
+          }, val.val.value()
+      );
     }
     return Value{std::nullopt};
   })};
-  symbols[{"_core.str"}] = Value{std::make_tuple<std::string, Value::NativeFunc>("core_str", [](const std::vector<Value>& v) -> Value {
-    std::stringstream ss;
-    for (const auto& val : v) {
-      ss << val << "\n";
+  symbols["__native__"]["str"] = Value{std::make_tuple<std::string, Value::NativeFunc>("__str", native_str)};
+  symbols["__native__"]["def"] = Value{std::make_tuple<std::string, Value::NativeFunc>("__def", [&](const std::vector<Value>& v) -> Value {
+    if (v.size() != 2) {
+      throw std::runtime_error("Invalid arity for def! Expected 2 values!");
     }
-    return Value{ss.str()};
+    if (!v[0].is<Symbol>()) {
+      throw std::runtime_error("Must bind to a Symbol!");
+    }
+    auto sym = v[0].get_throw<Symbol>();
+    if (sym.token.starts_with("__native__.")) {
+      throw std::runtime_error("Cannot define symbols in native namespace");
+    }
+    auto ns = sym.ns ? *sym.ns : current_namespace();
+    symbols[ns][sym.token] = v[1];
+    return Value{std::nullopt};
   })};
+  symbols["__native__"]["add"] = Value{std::make_tuple<std::string, Value::NativeFunc>("__add", native_add)};
+  symbols["__native__"]["invert-sign"] = Value{std::make_tuple<std::string, Value::NativeFunc>("__invert-sign", invert_sign)};
 }
 
 generator::eval::Value generator::eval::Context::eval(const std::string_view &str) {
   auto parsed = parse(str);
-  return Value{std::nullopt};
+  if (std::holds_alternative<ParseError>(parsed)) {
+    throw std::runtime_error(std::get<ParseError>(parsed).msg);
+  }
+  auto parsedVals = std::get<ParseResult>(parsed);
+  Value lastRes{std::nullopt};
+  for (const auto& v : parsedVals) {
+    lastRes = evalValue(v, nullptr);
+  }
+  return lastRes;
+}
+
+std::shared_ptr<generator::eval::Frame> generator::eval::Context::make_frame(std::shared_ptr<generator::eval::Frame> parent) {
+  using namespace generator::eval;
+  auto frame = std::make_shared<Frame>();
+  (*frame->current)["let"] = {std::make_tuple<std::string, Value::NativeFunc>(
+      "__frame.let" +
+          std::to_string(reinterpret_cast<unsigned long long>(&(*frame))),
+      [&](const std::vector<Value>& args) -> Value {
+        if (args.empty()) {
+          throw std::runtime_error("Must have arguments to 'let'");
+        }
+        if (!args[0].is<std::vector<Value>>()) {
+          throw std::runtime_error("First argument to 'let' must be a vector");
+        }
+        auto newFrame = make_frame(frame);
+        auto argVec = std::get<std::vector<Value>>(*args[0].val);
+        for(auto it = argVec.begin(); it != argVec.end(); ++it) {
+          auto key = *it;
+          if (!key.is<Symbol>()) {
+            throw std::runtime_error("'let' can only bind to symbols!");
+          }
+          ++it;
+          if (it == argVec.end()) {
+            throw std::runtime_error("Missing value for " + it->to_string());
+          }
+          auto val = evalValue(*it, newFrame);
+          (*newFrame->current)[key.to_string()] = val;
+        }
+        Value lastRes{std::nullopt};
+        for(auto argIt = args.begin() + 1; argIt != args.end(); ++argIt) {
+          lastRes = evalValue(*argIt, newFrame);
+        }
+        return lastRes;
+      })};
+  return frame;
+}
+
+generator::eval::Value generator::eval::Context::evalValue(const Value &val, std::shared_ptr<Frame> frame) {
+  if (frame == nullptr) {
+    frame = make_frame(frame);
+  }
+  if (val.val.has_value()) {
+    return std::visit(
+        visitor::overload{
+            [&](const Symbol &sym) -> Value {
+              if (!sym.ns) {
+                for (auto curFrame = frame; curFrame != nullptr; curFrame = curFrame->parent) {
+                  auto it = curFrame->current->find(sym.token);
+                  if (it != curFrame->current->end()) {
+                    return it->second;
+                  }
+                }
+
+                {
+                  auto it = this->symbols[current_namespace()].find(sym.token);
+                  if (it != this->symbols[current_namespace()].end()) {
+                    return it->second;
+                  }
+                }
+
+                auto &fallbackList = this->fallbackNs[current_namespace()];
+                for (const auto &fallback : fallbackList) {
+                  auto it = this->symbols[fallback].find(sym.token);
+                  if (it != this->symbols[fallback].end()) {
+                    return it->second;
+                  }
+                }
+                throw std::runtime_error("Could not find symbol " + sym.token);
+              } else {
+                auto ns = *sym.ns;
+                auto it = this->symbols[ns].find(sym.token);
+                if (it != this->symbols[ns].end()) {
+                  return it->second;
+                }
+                throw std::runtime_error("Could not find symbol " + ns + "." +
+                                         sym.token);
+              }
+            },
+            [&](const std::vector<Value>& vec) -> Value {
+              auto res = std::vector<Value>{};
+              res.resize(vec.size());
+              std::transform(vec.begin(), vec.end(), res.begin(), [&](const auto& v){ return evalValue(v, frame); });
+              return {res};
+            },
+            [&](const std::list<Value>& list) -> Value {
+              if (list.empty()) {
+                return Value{std::nullopt};
+              }
+              auto method = evalValue(*list.begin(), frame);
+              auto params = std::vector<Value>{};
+              params.resize(list.size() - 1);
+              auto begin = list.begin();
+              ++begin;
+              std::transform(begin, list.end(), params.begin(), [&](const auto& v){ return evalValue(v, frame); });
+              return call(method, params, frame);
+            },
+            [](const auto &v) -> Value { return {v}; }},
+        *val.val);
+  }
+  return val;
+}
+
+generator::eval::Value generator::eval::Context::call(const Value& func, const std::vector<Value>& params, std::shared_ptr<Frame> frame) {
+  if (!func.val.has_value()) {
+    throw std::runtime_error("Cannot call 'nil'!");
+  }
+  return std::visit(
+      visitor::overload{
+          [&](const Func& func) -> Value {
+            if (params.size() < func.args.size() || (!func.varArgs.has_value() && func.args.size() != params.size())) {
+              throw std::runtime_error("Expected arity " + std::to_string(func.args.size()) + " but received  " + std::to_string(params.size()) + " params.");
+            }
+            auto funcFrame = make_frame(frame->add_root_frame(func.frame));
+            auto paramIt = params.begin();
+            for (auto argIt = func.args.begin(); argIt != func.args.end(); ++paramIt, ++argIt) {
+              (*funcFrame->current)[Value{*argIt}.to_string()] = *paramIt;
+            }
+
+            if (func.varArgs.has_value()) {
+              std::vector<Value> v;
+              v.reserve(params.end() - paramIt);
+              for(; paramIt != params.end(); ++paramIt) {
+                v.push_back(*paramIt);
+              }
+              (*funcFrame->current)[Value{func.varArgs.value()}.to_string()] = Value{v};
+            }
+            return evalValue(Value{func.statements}, funcFrame);
+          },
+          [&](const NativeFunc& func) -> Value {
+            return std::get<1>(func)(params);
+          },
+          [](const auto& nonFunc) -> Value {
+            throw std::runtime_error("Invalid callable!");
+          }
+      },
+      func.val.value()
+  );
 }
 
 std::string unescape(const std::string& str) {
@@ -90,9 +367,6 @@ static generator::eval::internal::Token str_to_token(const std::string& s) {
   }
   else if (ch == '}') {
     return {TOKEN_TYPE::BRACE_END, s};
-  }
-  else if (ch == '\'') {
-    return {TOKEN_TYPE::QUOTE, s};
   }
   else if ((ch >= '0' && ch <= '9') ||
            ((ch == '+' || ch == '-') && s.size() > 1)) {
@@ -158,7 +432,7 @@ static std::variant<generator::eval::Value, generator::eval::Context::ParseError
 
   switch (token.type) {
     case TOKEN_TYPE::PAREN_START: {
-      auto val = std::vector<Value>{};
+      auto val = std::list<Value>{};
       for(auto curToken = std::get<1>(*begin); curToken.type != TOKEN_TYPE::PAREN_END; curToken = std::get<1>(*begin)) {
         EVAL_ENGINE_GET_VALUE_OR_RET_ERR(v)
         val.template emplace_back(v);
@@ -168,7 +442,6 @@ static std::variant<generator::eval::Value, generator::eval::Context::ParseError
     }
     case TOKEN_TYPE::BRACKET_START: {
       auto val = std::vector<Value>{};
-      val.emplace_back(Value{generator::eval::Symbol{"vector"}});
       for(auto curToken = std::get<1>(*begin); curToken.type != TOKEN_TYPE::BRACKET_END; curToken = std::get<1>(*begin)) {
         EVAL_ENGINE_GET_VALUE_OR_RET_ERR(v)
         val.template emplace_back(v);
@@ -194,10 +467,15 @@ static std::variant<generator::eval::Value, generator::eval::Context::ParseError
       return Value{strtod(token.sv.c_str(), nullptr)};
     case TOKEN_TYPE::ATOM:
       return Value{generator::eval::Atom{token.sv.substr(1)}};
-    case TOKEN_TYPE::QUOTE:
-      return Value{generator::eval::Quote{}};
-    case TOKEN_TYPE::SYMBOL:
-      return Value{generator::eval::Symbol{token.sv}};
+    case TOKEN_TYPE::SYMBOL: {
+      auto pos = token.sv.find_last_of(".");
+      if (pos != std::string::npos) {
+        auto ns = token.sv.substr(0, pos);
+        auto val = token.sv.substr(pos + 1);
+        return Value{generator::eval::Symbol{ns, val}};
+      }
+      return Value{generator::eval::Symbol{std::nullopt, token.sv}};
+    }
     case TOKEN_TYPE::STRING:
       return Value{unescape(token.sv.substr(1, token.sv.size() - 2))};
     case TOKEN_TYPE::NIL:
@@ -211,7 +489,7 @@ static std::variant<generator::eval::Value, generator::eval::Context::ParseError
 }
 
 std::variant<std::vector<generator::eval::Value>, generator::eval::Context::ParseError> generator::eval::Context::parse(const std::string_view &str) {
-  auto tokenRange = ranges::views::tokenize(str, std::regex{R"re(([a-zA-Z_\*\/\$\@\!\?][\.\w\-\+\=\*\/\$\@\!\?]*)|([\(\[\{'\}\]\)])|([\-\+]?(\d+(\.\d+)?)?)|("([^\\"]|(\\.))*"))re"})
+  auto tokenRange = ranges::views::tokenize(str, std::regex{R"re((:?[a-zA-Z_\*\/\$\@\!\?][\.\w\-\+\=\*\/\$\@\!\?]*)|([\(\[\{\}\]\)])|([\-\+]?(\d+(\.\d+)?)?)|("([^\\"]|(\\.))*"))re"})
      | ranges::views::transform([](const auto& s) { return s.str(); })
      | ranges::views::filter([](const auto& s) { return !s.empty(); })
      | ranges::views::transform(str_to_token);
@@ -253,6 +531,10 @@ std::string generator::eval::Context::str() {
 
 std::string generator::eval::Context::buffer() const {
   return buf.str();
+}
+
+std::string generator::eval::Context::current_namespace() const {
+  return std::string("core");
 }
 
 std::strong_ordering generator::eval::Func::operator<=>(const generator::eval::Func& other) const {
@@ -364,14 +646,26 @@ std::ostream &operator<<(std::ostream &os, const generator::eval::Value &val) {
                )
                << "]";
           },
+          [&](const std::list<Value>& vec) {
+            os << "("
+               << (vec |
+                   ranges::views::transform([](const auto& e) {
+                     std::stringstream ss;
+                     ss << e;
+                     return ss.str();
+                   }) |
+                   ranges::views::join(" ")
+                       )
+               << ")";
+          },
           [&](const Atom& a) {
             os << ":" << a.token;
           },
           [&](const Symbol& s) {
+            if (s.ns) {
+              os << s.ns.value() << ".";
+            }
             os << s.token;
-          },
-          [&](const Quote& s) {
-            os << "'";
           },
           [&](const std::string& str) {
             os << "\"";
