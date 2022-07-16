@@ -35,10 +35,10 @@ tmpl.render({"employees", employees}, std::cout);
 ````cpp
 mustache tmpl("Hello {{what}}!");
 std::stringstream ss;
-tmpl.render({"what", "World"}, [&ss](const std::string& str) {
-    ss << str;
+tmpl.render({"what", "World"}, [&ss](const std::string& pull_buffer) {
+    ss << pull_buffer;
 });
-// ss.str() == "Hello World!"
+// ss.pull_buffer() == "Hello World!"
 ````
 
 ## Supported Features

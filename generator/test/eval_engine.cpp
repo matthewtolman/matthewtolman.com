@@ -134,7 +134,7 @@ TEST_SUITE("Eval Engine") {
       auto res = ctx.eval("__native__.add");
       REQUIRE(res.has_value());
       REQUIRE(res.is<NativeFunc>());
-      CHECK_EQ(std::get<0>(res.get_throw<NativeFunc>()), "__add");
+      CHECK_EQ(std::get<0>(res.get_throw<NativeFunc>()), "add");
     }
 
     SUBCASE("Numbers Resolve") {
@@ -182,7 +182,7 @@ TEST_SUITE("Eval Engine") {
       auto res = ctx.eval("(__native__.add 2 5)");
       REQUIRE(res.has_value());
       REQUIRE(res.is<double>());
-      CHECK_EQ(7, *res.cast<int>());
+      CHECK_EQ(7, res.get_throw<double>());
     }
 
     SUBCASE("Vectors Resolve") {
@@ -193,14 +193,14 @@ TEST_SUITE("Eval Engine") {
       auto vec = res.get_throw<std::vector<Value>>();
       auto first = vec[0];
       auto second = vec[1];
-      CHECK_EQ(std::get<0>(first.get_throw<NativeFunc>()), "__add");
+      CHECK_EQ(std::get<0>(first.get_throw<NativeFunc>()), "add");
       CHECK_EQ(second.get_throw<double>(), 1);
     }
 
     SUBCASE("Write Buffer") {
       auto ctx = Context{};
       auto res = ctx.eval(R"((__native__.buf "Hello"))");
-      auto buff = ctx.str();
+      auto buff = ctx.pull_buffer();
       CHECK_EQ("Hello", buff);
     }
 
@@ -208,7 +208,95 @@ TEST_SUITE("Eval Engine") {
       auto ctx = Context{};
       auto res = ctx.eval(R"W((__native__.buf (__native__.str "Hello " (__native__.add 8 5) " ducks"))
 (__native__.buf "Test"))W");
-      CHECK_EQ("Hello 13 ducksTest", ctx.str());
+      CHECK_EQ("Hello 13 ducksTest", ctx.pull_buffer());
+    }
+
+    SUBCASE("Let Binding") {
+      auto ctx = Context{};
+      auto res = ctx.eval("(let [a 12 b 4] (__native__.add a b))");
+      REQUIRE(res.has_value());
+      REQUIRE(res.is<double>());
+      CHECK_EQ(16, res.get_throw<double>());
+    }
+  }
+
+  TEST_CASE("Native Methods") {
+    SUBCASE("Add") {
+      auto ctx = Context{};
+      auto res = ctx.eval("(__native__.add 6 8 3 2)");
+      REQUIRE(res.has_value());
+      REQUIRE(res.is<double>());
+      CHECK_EQ(19, res.get_throw<double>());
+    }
+
+    SUBCASE("Subtract") {
+      auto ctx = Context{};
+      auto res = ctx.eval("(__native__.sub 16 8 2 1)");
+      REQUIRE(res.has_value());
+      REQUIRE(res.is<double>());
+      CHECK_EQ(5, res.get_throw<double>());
+    }
+
+    SUBCASE("Def") {
+      auto ctx = Context{};
+
+      // Thest that we can assign
+      auto res = ctx.eval("(__native__.def a 23) a");
+      REQUIRE(res.has_value());
+      REQUIRE(res.is<double>());
+      CHECK_EQ(23, res.get_throw<double>());
+
+      // Test that we can reassign and use in an add
+      res = ctx.eval(R"STR(
+(__native__.def a 13)
+(__native__.def b 31)
+(__native__.add a b))STR");
+      REQUIRE(res.has_value());
+      REQUIRE(res.is<double>());
+      CHECK_EQ(44, res.get_throw<double>());
+
+      // Test that we can use in a different eval call (aka. it persists)
+      res = ctx.eval(R"STR(
+(__native__.sub b a a))STR");
+      REQUIRE(res.has_value());
+      REQUIRE(res.is<double>());
+      CHECK_EQ(5, res.get_throw<double>());
+
+      // Test that we can have namespaced definitions
+      res = ctx.eval(R"STR(
+(__native__.def test.a -13)
+(__native__.add a test.a))STR");
+      REQUIRE(res.has_value());
+      REQUIRE(res.is<double>());
+      CHECK_EQ(0, res.get_throw<double>());
+    }
+
+    SUBCASE("Invert Sign") {
+      auto ctx = Context{};
+      auto res = ctx.eval("(__native__.invert-sign 23)");
+      REQUIRE(res.has_value());
+      REQUIRE(res.is<double>());
+      CHECK_EQ(-23, res.get_throw<double>());
+
+      res = ctx.eval("(__native__.invert-sign -23)");
+      REQUIRE(res.has_value());
+      REQUIRE(res.is<double>());
+      CHECK_EQ(23, res.get_throw<double>());
+    }
+
+    SUBCASE("String concatenation") {
+      auto ctx = Context{};
+      auto res = ctx.eval(R"S((__native__.str 23 "Hello" :hello))S");
+      REQUIRE(res.has_value());
+      REQUIRE(res.is<std::string>());
+      CHECK_EQ("23Hello:hello", res.get_throw<std::string>());
+    }
+
+    SUBCASE("Write to buffer") {
+      auto ctx = Context{};
+      auto res = ctx.eval(R"S((__native__.buf 23 "Hello" :hello))S");
+      REQUIRE(!res.has_value());
+      CHECK_EQ("23Hello:hello", ctx.pull_buffer());
     }
   }
 }

@@ -99,6 +99,21 @@ std::string generator::eval::Value::to_string() const {
   return ss.str();
 }
 
+static double value_to_double(const generator::eval::Value& val) {
+  std::optional<double> num = std::nullopt;
+  if (val.template is<double>()) {
+    num = val.template get<double>();
+  }
+  else if (val.template is<bool>()) {
+    auto b = val.template get_throw<bool>();
+    num = b ? 1 : 0;
+  }
+  if (!num.has_value()) {
+    throw std::runtime_error("Cannot cast value '" + val.to_string() + "' to number");
+  }
+  return num.value();
+}
+
 static generator::eval::Value native_str(const std::vector<generator::eval::Value>& v) {
   std::stringstream ss;
   for (const auto& val : v) {
@@ -126,30 +141,29 @@ static generator::eval::Value native_add(const std::vector<generator::eval::Valu
     throw std::runtime_error("Expected at least one argument to __native__.add!");
   }
   double sum = 0;
-  std::for_each(v.begin(), v.end(), [&sum](const auto& val){
-    auto num = val.template cast<double>();
-    if (!num) {
-      throw std::runtime_error("Cannot cast value '" + val.to_string() + "' to number");
-    }
-    sum += *num;
-  });
+  std::for_each(v.begin(), v.end(), [&sum](const auto& val){ sum += value_to_double(val);});
   return {sum};
+}
+
+static generator::eval::Value native_sub(const std::vector<generator::eval::Value>& v) {
+  if (v.empty()) {
+    throw std::runtime_error("Expected at least one argument to __native__.add!");
+  }
+  double total = value_to_double(v[0]);
+  std::for_each(v.begin() + 1, v.end(), [&total](const auto& val){ total -= value_to_double(val); });
+  return {total};
 }
 
 static generator::eval::Value invert_sign(const std::vector<generator::eval::Value>& v) {
   if (v.size() != 1) {
     throw std::runtime_error("Expected arity of one argument to __native__.invert-sign!");
   }
-  auto val = v[0].cast<double>();
-  if (!val) {
-    throw std::runtime_error("Cannot cast value '" + v[0].to_string() + "' to number");
-  }
-  return {-(*val)};
+  return {-value_to_double(v[0])};
 }
 
 generator::eval::Context::Context() {
   symbols["__native__"] = {};
-  symbols["__native__"]["buf"] = Value{std::make_tuple<std::string, Value::NativeFunc>("__buf", [&](const std::vector<Value>& v) -> Value {
+  symbols["__native__"]["buf"] = Value{std::make_tuple<std::string, Value::NativeFunc>("buf", [&](const std::vector<Value>& v) -> Value {
     for (const auto& val : v) {
       buf << std::visit(
           visitor::overload{
@@ -160,8 +174,8 @@ generator::eval::Context::Context() {
     }
     return Value{std::nullopt};
   })};
-  symbols["__native__"]["str"] = Value{std::make_tuple<std::string, Value::NativeFunc>("__str", native_str)};
-  symbols["__native__"]["def"] = Value{std::make_tuple<std::string, Value::NativeFunc>("__def", [&](const std::vector<Value>& v) -> Value {
+  symbols["__native__"]["str"] = Value{std::make_tuple<std::string, Value::NativeFunc>("str", native_str)};
+  symbols["__native__"]["def"] = Value{std::make_tuple<std::string, Value::NativeFunc>("_1def", [&](const std::vector<Value>& v) -> Value {
     if (v.size() != 2) {
       throw std::runtime_error("Invalid arity for def! Expected 2 values!");
     }
@@ -176,8 +190,9 @@ generator::eval::Context::Context() {
     symbols[ns][sym.token] = v[1];
     return Value{std::nullopt};
   })};
-  symbols["__native__"]["add"] = Value{std::make_tuple<std::string, Value::NativeFunc>("__add", native_add)};
-  symbols["__native__"]["invert-sign"] = Value{std::make_tuple<std::string, Value::NativeFunc>("__invert-sign", invert_sign)};
+  symbols["__native__"]["add"] = Value{std::make_tuple<std::string, Value::NativeFunc>("add", native_add)};
+  symbols["__native__"]["sub"] = Value{std::make_tuple<std::string, Value::NativeFunc>("sub", native_sub)};
+  symbols["__native__"]["invert-sign"] = Value{std::make_tuple<std::string, Value::NativeFunc>("invert-sign", invert_sign)};
 }
 
 generator::eval::Value generator::eval::Context::eval(const std::string_view &str) {
@@ -197,8 +212,7 @@ std::shared_ptr<generator::eval::Frame> generator::eval::Context::make_frame(std
   using namespace generator::eval;
   auto frame = std::make_shared<Frame>();
   (*frame->current)["let"] = {std::make_tuple<std::string, Value::NativeFunc>(
-      "__frame.let" +
-          std::to_string(reinterpret_cast<unsigned long long>(&(*frame))),
+      "__frame.let",
       [&](const std::vector<Value>& args) -> Value {
         if (args.empty()) {
           throw std::runtime_error("Must have arguments to 'let'");
@@ -285,7 +299,18 @@ generator::eval::Value generator::eval::Context::evalValue(const Value &val, std
               params.resize(list.size() - 1);
               auto begin = list.begin();
               ++begin;
-              std::transform(begin, list.end(), params.begin(), [&](const auto& v){ return evalValue(v, frame); });
+
+              auto toSkip = params_to_skip_eval_for(method);
+              std::transform(
+                  begin, list.end(), params.begin(),
+                  [&](const auto &v) {
+                    if (toSkip) {
+                      --toSkip;
+                      return v;
+                    }
+                    return evalValue(v, frame);
+                  }
+              );
               return call(method, params, frame);
             },
             [](const auto &v) -> Value { return {v}; }},
@@ -523,7 +548,7 @@ std::variant<std::vector<generator::eval::Value>, generator::eval::Context::Pars
 
 #undef EVAL_ENGINE_GET_VALUE_OR_RET_ERR
 
-std::string generator::eval::Context::str() {
+std::string generator::eval::Context::pull_buffer() {
   auto res = buf.str();
   buf.str("");
   return res;
@@ -535,6 +560,44 @@ std::string generator::eval::Context::buffer() const {
 
 std::string generator::eval::Context::current_namespace() const {
   return std::string("core");
+}
+
+std::strong_ordering generator::eval::Frame::operator<=>(const generator::eval::Frame& other) const {
+  if (current == other.current && parent == other.parent) {
+    return std::strong_ordering::equal;
+  }
+  if (!current != !other.current) {
+    return current ? std::strong_ordering::greater : std::strong_ordering::less;
+  }
+  else if (!current) {
+    return std::strong_ordering::equal;
+  }
+
+  if (!parent != !other.parent) {
+    return parent ? std::strong_ordering::greater : std::strong_ordering::less;
+  }
+
+  for (auto lIter = current->begin(), rIter = other.current->begin(); lIter != current->end() && rIter != other.current->end(); ++lIter, ++rIter) {
+    if (lIter->first != rIter->first) {
+      if (lIter->first < rIter->first) {
+        return std::strong_ordering::less;
+      }
+      return std::strong_ordering::greater;;
+    }
+    if (lIter->second != rIter->second) {
+      return lIter->second <=> rIter->second;
+    }
+  }
+  if (current->size() != other.current->size()) {
+    return current->size() <=> other.current->size();
+  }
+
+  if (parent) {
+    return (*parent) <=> (*other.parent);
+  }
+  else {
+    return std::strong_ordering::equal;
+  }
 }
 
 std::strong_ordering generator::eval::Func::operator<=>(const generator::eval::Func& other) const {
@@ -553,7 +616,53 @@ std::strong_ordering generator::eval::Func::operator<=>(const generator::eval::F
   if (varArgs.has_value() != other.varArgs.has_value()) {
     return varArgs.has_value() ? std::strong_ordering::greater : std::strong_ordering::less;
   }
-  return compareVec(statements, other.statements);
+  comp = compareVec(statements, other.statements);
+  if (comp != 0) {
+    return comp;
+  }
+  if (desc.has_value() != other.desc.has_value()) {
+    return desc.has_value() ? std::strong_ordering::greater : std::strong_ordering::less;
+  }
+  if(desc.value() != other.desc.value()) {
+    return desc.value() > other.desc.value() ? std::strong_ordering::greater : std::strong_ordering::less;
+  }
+  if ((frame == nullptr) != (other.frame == nullptr)) {
+    return (frame == nullptr) ? std::strong_ordering::greater : std::strong_ordering::less;
+  }
+  if (frame) {
+    return *frame <=> *other.frame;
+  }
+  return std::strong_ordering::equal;
+}
+
+
+std::strong_ordering generator::eval::Macro::operator<=>(const generator::eval::Macro& other) const {
+  auto compareVec = [](const auto& left, const auto& right) -> std::strong_ordering {
+    for (auto lIter = left.begin(), rIter = right.begin(); lIter != left.end() && rIter != right.end(); ++lIter, ++rIter) {
+      if (*lIter != *rIter) {
+        return *lIter <=> *rIter;
+      }
+    }
+    return left.size() <=> right.size();
+  };
+  auto comp = compareVec(args, other.args);
+  if (comp != 0) {
+    return comp;
+  }
+  if (varArgs.has_value() != other.varArgs.has_value()) {
+    return varArgs.has_value() ? std::strong_ordering::greater : std::strong_ordering::less;
+  }
+  comp = compareVec(statements, other.statements);
+  if (comp != 0) {
+    return comp;
+  }
+  if (desc.has_value() != other.desc.has_value()) {
+    return desc.has_value() ? std::strong_ordering::greater : std::strong_ordering::less;
+  }
+  if(desc.value() != other.desc.value()) {
+    return desc.value() > other.desc.value() ? std::strong_ordering::greater : std::strong_ordering::less;
+  }
+  return std::strong_ordering::equal;
 }
 
 //generator::eval::Parser::TokenIterator::value_type generator::eval::Parser::TokenIterator::operator*() const {
@@ -608,7 +717,8 @@ std::ostream &operator<<(std::ostream &os, const generator::eval::Value &val) {
             os << "<NativeFunc:" << std::get<0>(tuple) << ">";
           },
           [&](const Func& func) {
-            os << "(fn ["
+            // TODO: encode frame, description
+            os << "(__native__.fn ["
                << (
                    func.args |
                    ranges::views::transform([](const Symbol& sym) { return sym.token; }) |
@@ -667,6 +777,21 @@ std::ostream &operator<<(std::ostream &os, const generator::eval::Value &val) {
             }
             os << s.token;
           },
+          [&](const Macro& macro) {
+            os << "(__native__.macro ["
+               << (
+                      macro.args |
+                      ranges::views::transform([](const Symbol& sym) { return sym.token; }) |
+                      ranges::views::join(" ")
+                          )
+               << (macro.varArgs.has_value() ? "& " + macro.varArgs->token : "")
+               << "] ";
+
+            for (const auto& stmt : macro.statements) {
+              os << "(" << stmt << ")";
+            }
+            os << ")";
+          },
           [&](const std::string& str) {
             os << "\"";
             std::regex_replace(std::ostreambuf_iterator<char>(os), str.begin(), str.end(), std::regex("\""), "\\\"");
@@ -682,4 +807,31 @@ std::ostream &operator<<(std::ostream &os, const generator::eval::Value &val) {
       *val.val
   );
   return os;
+}
+
+size_t generator::eval::Context::params_to_skip_eval_for(const generator::eval::Value& val) {
+  if (!val.val.has_value()) {
+    return 0;
+  }
+  return std::visit(
+      visitor::overload{
+          [](const NativeFunc& nativeFunc) -> size_t {
+            auto name = std::get<0>(nativeFunc);
+            if (name.starts_with("__")) {
+              return std::numeric_limits<size_t>::max();
+            }
+            else if (name.starts_with("_")) {
+              return static_cast<size_t>(strtoull(name.c_str() + 1, nullptr, 10));
+            }
+            return 0;
+          },
+          [](const Macro& value) -> size_t {
+            return std::numeric_limits<size_t>::max();
+          },
+          [](const auto& value) -> size_t {
+              return 0;
+          }
+      },
+      val.val.value()
+    );
 }
