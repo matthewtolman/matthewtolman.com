@@ -57,6 +57,15 @@ TEST_SUITE("Eval Engine") {
       REQUIRE_EQ(v.token, "test-atom");
     }
 
+    SUBCASE("Nil") {
+      using ExpectedType = Atom;
+      auto res = ctx.parse(R"STR(nil)STR");
+      REQUIRE(std::holds_alternative<Context::ParseResult>(res));
+      auto parseRes = std::get<Context::ParseResult>(res);
+      auto plain = parseRes[0];
+      REQUIRE(!plain.has_value());
+    }
+
     SUBCASE("Symbols") {
       using ExpectedType = Symbol;
       auto res = ctx.parse(R"STR(test-sym namespaced.sym)STR");
@@ -235,6 +244,55 @@ TEST_SUITE("Eval Engine") {
       REQUIRE(res.has_value());
       REQUIRE(res.is<double>());
       CHECK_EQ(5, res.get_throw<double>());
+    }
+
+    SUBCASE("Multiply") {
+      auto ctx = Context{};
+      auto res = ctx.eval("(__native__.mul 6 8 3 2)");
+      REQUIRE(res.has_value());
+      REQUIRE(res.is<double>());
+      CHECK_EQ(288, res.get_throw<double>());
+    }
+
+    SUBCASE("Divide") {
+      auto ctx = Context{};
+      auto res = ctx.eval("(__native__.div 384 2 3 4)");
+      REQUIRE(res.has_value());
+      REQUIRE(res.is<double>());
+      CHECK_EQ(16, res.get_throw<double>());
+    }
+
+    SUBCASE("Eval Bool") {
+      auto ctx = Context{};
+      auto res = ctx.eval("(true 384 2)");
+      CHECK_EQ(384, res.get_throw<double>());
+
+      res = ctx.eval("(false 384 2)");
+      CHECK_EQ(2, res.get_throw<double>());
+    }
+
+    SUBCASE("Truthy") {
+      auto ctx = Context{};
+      auto res = ctx.eval("(__native__.truthy 384)");
+      CHECK_EQ(true, res.get_throw<bool>());
+
+      res = ctx.eval("(__native__.truthy 0)");
+      CHECK_EQ(false, res.get_throw<bool>());
+
+      res = ctx.eval("(__native__.truthy \"\")");
+      CHECK_EQ(false, res.get_throw<bool>());
+
+      res = ctx.eval("(__native__.truthy \"a\")");
+      CHECK_EQ(true, res.get_throw<bool>());
+
+      res = ctx.eval("(__native__.truthy nil)");
+      CHECK_EQ(false, res.get_throw<bool>());
+
+      res = ctx.eval("(__native__.truthy :a)");
+      CHECK_EQ(true, res.get_throw<bool>());
+
+      res = ctx.eval("(__native__.truthy __native__.add)");
+      CHECK_EQ(true, res.get_throw<bool>());
     }
 
     SUBCASE("Def") {

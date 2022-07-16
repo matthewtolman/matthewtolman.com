@@ -1,7 +1,9 @@
 #include "eval_engine.hpp"
 #include <iostream>
 #include <range/v3/algorithm/all_of.hpp>
+#include <range/v3/numeric/accumulate.hpp>
 #include <range/v3/view.hpp>
+#include <functional>
 #include <magic_enum.hpp>
 #include <stack>
 
@@ -140,18 +142,55 @@ static generator::eval::Value native_add(const std::vector<generator::eval::Valu
   if (v.empty()) {
     throw std::runtime_error("Expected at least one argument to __native__.add!");
   }
-  double sum = 0;
-  std::for_each(v.begin(), v.end(), [&sum](const auto& val){ sum += value_to_double(val);});
-  return {sum};
+  return {
+      ranges::accumulate(
+          ranges::views::transform(
+              v, [](const auto &val) { return value_to_double(val); }),
+              0.0
+      )
+  };
+}
+
+static generator::eval::Value native_mul(const std::vector<generator::eval::Value>& v) {
+  if (v.empty()) {
+    throw std::runtime_error("Expected at least one argument to __native__.add!");
+  }
+  return {
+      ranges::accumulate(
+          ranges::views::transform(
+              v, [](const auto &val) { return value_to_double(val); }),
+          1.0,
+          std::multiplies<>()
+          )
+  };
 }
 
 static generator::eval::Value native_sub(const std::vector<generator::eval::Value>& v) {
   if (v.empty()) {
     throw std::runtime_error("Expected at least one argument to __native__.add!");
   }
-  double total = value_to_double(v[0]);
-  std::for_each(v.begin() + 1, v.end(), [&total](const auto& val){ total -= value_to_double(val); });
-  return {total};
+  return {
+      ranges::accumulate(
+          ranges::views::drop_exactly(v, 1) |
+          ranges::views::transform([](const auto &val) { return value_to_double(val); }),
+          value_to_double(v[0]),
+          std::minus<>()
+      )
+  };
+}
+
+static generator::eval::Value native_div(const std::vector<generator::eval::Value>& v) {
+  if (v.empty()) {
+    throw std::runtime_error("Expected at least one argument to __native__.add!");
+  }
+  return {
+      ranges::accumulate(
+          ranges::views::drop_exactly(v, 1) |
+              ranges::views::transform([](const auto &val) { return value_to_double(val); }),
+          value_to_double(v[0]),
+          std::divides<>()
+      )
+  };
 }
 
 static generator::eval::Value invert_sign(const std::vector<generator::eval::Value>& v) {
@@ -159,6 +198,28 @@ static generator::eval::Value invert_sign(const std::vector<generator::eval::Val
     throw std::runtime_error("Expected arity of one argument to __native__.invert-sign!");
   }
   return {-value_to_double(v[0])};
+}
+
+static generator::eval::Value truthy(const std::vector<generator::eval::Value>& v) {
+  if (v.size() != 1) {
+    throw std::runtime_error("Expected arity of one argument to __native__.truthy!");
+  }
+  auto val = v[0];
+  if (!val.has_value()) {
+    return {false};
+  }
+
+  return {
+    std::visit(
+        visitor::overload{
+              [](bool b) { return b; },
+              [](const std::string& s) { return !s.empty(); },
+              [](double d) { return d != 0.0; },
+              [](const auto&) { return true; }
+        },
+        val.val.value()
+    )
+  };
 }
 
 generator::eval::Context::Context() {
@@ -192,7 +253,10 @@ generator::eval::Context::Context() {
   })};
   symbols["__native__"]["add"] = Value{std::make_tuple<std::string, Value::NativeFunc>("add", native_add)};
   symbols["__native__"]["sub"] = Value{std::make_tuple<std::string, Value::NativeFunc>("sub", native_sub)};
+  symbols["__native__"]["mul"] = Value{std::make_tuple<std::string, Value::NativeFunc>("mul", native_mul)};
+  symbols["__native__"]["div"] = Value{std::make_tuple<std::string, Value::NativeFunc>("div", native_div)};
   symbols["__native__"]["invert-sign"] = Value{std::make_tuple<std::string, Value::NativeFunc>("invert-sign", invert_sign)};
+  symbols["__native__"]["truthy"] = Value{std::make_tuple<std::string, Value::NativeFunc>("truthy", truthy)};
 }
 
 generator::eval::Value generator::eval::Context::eval(const std::string_view &str) {
@@ -347,6 +411,15 @@ generator::eval::Value generator::eval::Context::call(const Value& func, const s
           },
           [&](const NativeFunc& func) -> Value {
             return std::get<1>(func)(params);
+          },
+          [&](bool b) -> Value {
+            if (b && !params.empty()) {
+              return params[0];
+            }
+            else if (!b && params.size() >= 2) {
+              return params[1];
+            }
+            return Value{std::nullopt};
           },
           [](const auto& nonFunc) -> Value {
             throw std::runtime_error("Invalid callable!");
