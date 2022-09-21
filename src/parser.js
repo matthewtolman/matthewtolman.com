@@ -52,7 +52,7 @@ async function addAssets([xml, blog]) {
                   content,
                 });
                 const fileName = path.join('data', blog.id, ...a._attr.src.split('/'));
-                switch (a._attr?.type) {
+                switch (a._attr.type) {
                   case 'sass':
                   case 'scss':
                     return new Promise((resolve, reject) =>
@@ -163,14 +163,14 @@ function addSeries([xml, blog]) {
       .map((a) => [a.id, a])
       .reduce((a, c) => ({ ...a, [c[0]]: c[1] }), {});
 
-    let seriesXml = Array.isArray(xml?.blog?.series) ? xml?.blog?.series : [xml?.blog?.series];
+    let seriesXml = Array.isArray(xml.blog.series) ? xml.blog.series : [xml.blog.series];
     if (seriesXml.length) {
       for (const sXml of seriesXml) {
         let articles = sXml.articleRef;
         if (!articles || !Array.isArray(articles)) {
           continue;
         }
-        articles = articles.filter((a) => a._attr.ref && blogArticles[a._attr.ref]?.published);
+        articles = articles.filter((a) => a._attr.ref && blogArticles[a._attr.ref].published);
         if (articles.length <= 1) {
           continue;
         }
@@ -205,7 +205,7 @@ function addArticles([xml, blog]) {
     articles = [articles];
   }
 
-  articles = articles.filter((a) => a._attr?.published?.toLowerCase() === 'yes');
+  articles = articles.filter((a) => a._attr.published.toLowerCase() === 'yes');
 
   return Promise.all(
     articles.map((article) =>
@@ -253,85 +253,85 @@ function parse(str) {
     // This is necessary to avoid infinite loops with zero-width matches
     if (match.index === tokenRegex.lastIndex) {
       tokenRegex.lastIndex++;
-    } else if (match?.groups?.references) {
+    } else if (match.groups.references) {
       result.references = { ...result.references, ...parseReferences(match[0]) };
-    } else if (match?.groups?.blockquote) {
+    } else if (match.groups.blockquote) {
       let subquote = match[0].replace(/^>/gm, '');
       result.tokens.push({
         type: ArticleTokenType.BLOCK_QUOTE,
         data: parse(subquote).tokens,
       });
-    } else if (match?.groups?.bold_italic) {
+    } else if (match.groups.bold_italic) {
       result.tokens.push({
         type: ArticleTokenType.BOLD_ITALIC,
         data: parse(match[0].slice(3, -3)).tokens,
       });
-    } else if (match?.groups?.bold) {
+    } else if (match.groups.bold) {
       result.tokens.push({
         type: ArticleTokenType.BOLD,
         data: parse(match[0].slice(2, -2)).tokens,
       });
-    } else if (match?.groups?.italic) {
+    } else if (match.groups.italic) {
       result.tokens.push({
         type: ArticleTokenType.ITALIC,
         data: parse(match[0].slice(1, -1)).tokens,
       });
-    } else if (match?.groups?.obj_link) {
+    } else if (match.groups.obj_link) {
       result.tokens.push({
         type: ArticleTokenType.OBJ_LINK,
         data: [],
-        attrs: { ref: (match?.groups?.obj_link || '').slice(2, -2) },
+        attrs: { ref: (match.groups.obj_link || '').slice(2, -2) },
       });
-    } else if (match?.groups?.header_level && match?.groups?.header) {
+    } else if (match.groups.header_level && match.groups.header) {
       result.sections.push({
-        title: (match?.groups?.header || '').trim(),
-        level: match?.groups?.header_level?.length || 1,
+        title: (match.groups.header || '').trim(),
+        level: match.groups.header_level.length || 1,
       });
       result.tokens.push({
         type: ArticleTokenType.HEADER,
-        data: [(match?.groups?.header || '').trim()],
-        attrs: { level: match?.groups?.header_level?.length || 1 },
+        data: [(match.groups.header || '').trim()],
+        attrs: { level: match.groups.header_level.length || 1 },
       });
-    } else if (match?.groups?.ref) {
+    } else if (match.groups.ref) {
       result.tokens.push({
         type: ArticleTokenType.REF,
         data: [],
-        attrs: { ref: match?.groups?.ref.slice(2, -1) },
+        attrs: { ref: match.groups.ref.slice(2, -1) },
       });
-    } else if (match?.groups?.link && match?.groups?.link_ref && match?.groups?.link_text) {
+    } else if (match.groups.link && match.groups.link_ref && match.groups.link_text) {
       result.tokens.push({
         type: ArticleTokenType.LINK,
-        data: [match?.groups?.link_text || ''],
-        attrs: { ref: match?.groups?.link_ref || '' },
+        data: [match.groups.link_text || ''],
+        attrs: { ref: match.groups.link_ref || '' },
       });
-    } else if (match?.groups?.list) {
+    } else if (match.groups.list) {
       result.tokens.push({
         type: ArticleTokenType.LIST,
-        data: parse(match?.groups?.list_text).tokens,
+        data: parse(match.groups.list_text).tokens,
         attrs: {
-          ordered: match?.groups?.list_char === '$',
-          leadingWhitespace: match[0].slice(0, match[0].indexOf(match?.groups?.list_char || '')),
+          ordered: match.groups.list_char === '$',
+          leadingWhitespace: match[0].slice(0, match[0].indexOf(match.groups.list_char || '')),
         },
       });
-    } else if (match?.groups?.toc) {
+    } else if (match.groups.toc) {
       result.tokens.push({
         type: ArticleTokenType.TABLE_OF_CONTENTS,
         data: [],
       });
-    } else if (match?.groups?.p_break) {
+    } else if (match.groups.p_break) {
       result.tokens.push({
         type: ArticleTokenType.PARAGRAPH_BREAK,
         data: [],
       });
-    } else if (match?.groups?.escaped) {
+    } else if (match.groups.escaped) {
       result.tokens.push(match[0].slice(1));
-    } else if (match?.groups?.emphasis) {
+    } else if (match.groups.emphasis) {
       result.tokens.push({
         type: ArticleTokenType.EMPHASIS,
         data: [match[0].slice(1, -1)],
       });
-    } else if (match?.groups?.elem) {
-      const pieces = (match?.groups?.elem || '').split('::');
+    } else if (match.groups.elem) {
+      const pieces = (match.groups.elem || '').split('::');
       result.tokens.push({
         type: ArticleTokenType.ELEM,
         data: [],
@@ -340,7 +340,7 @@ function parse(str) {
           .map((s) => [s.slice(0, s.indexOf('=')), s.slice(s.indexOf('=') + 1)])
           .reduce((a, c) => ({ ...a, [c[0]]: c[1] }), { tag: pieces[0] }),
       });
-    } else if (match?.groups?.code_block) {
+    } else if (match.groups.code_block) {
       result.tokens.push(parseCodeBlock(match[0]));
     } else {
       const empty = result.tokens.length == 0;
@@ -373,9 +373,9 @@ function parseCodeBlock(str) {
 
     return {
       type: ArticleTokenType.CODE_BLOCK,
-      data: [m?.groups?.code || ''],
+      data: [m.groups.code || ''],
       attrs: {
-        lang: m?.groups?.code_type || '',
+        lang: m.groups.code_type || '',
       },
     };
   }
@@ -398,8 +398,8 @@ function parseReferences(str) {
       referenceRegex.lastIndex++;
     }
 
-    if (match?.groups?.ref_name) {
-      const refId = match?.groups?.ref_name || '';
+    if (match.groups.ref_name) {
+      const refId = match.groups.ref_name || '';
       const reference = {
         id: ++id,
         type: 'other',
@@ -410,7 +410,7 @@ function parseReferences(str) {
           propRegex.lastIndex++;
         }
 
-        reference[propMatch?.groups?.prop_name || ''] = propMatch?.groups?.prop_value || '';
+        reference[propMatch.groups.prop_name || ''] = propMatch.groups.prop_value || '';
       }
 
       res[refId] = reference;
