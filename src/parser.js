@@ -223,7 +223,7 @@ function addArticles([xml, blog]) {
           time: new Date(xmlArticle._attr.time),
           content,
           description: xmlArticle.description,
-          published: xmlArticle._attr.published ?? true,
+          published: xmlArticle._attr.published != null && (typeof xmlArticle._attr.published) !== 'undefined' ? xmlArticle._attr.published : true,
           tags: [], // TODO: add tags
           assets: {}, // TODO: add article specific assets
         };
