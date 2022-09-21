@@ -10,7 +10,7 @@ import {
     Blog,
     File,
     Section
-} from "./types";
+} from "./types.jjs";
 import {render} from 'mustache';
 import {copy, writeFile} from "fs-extra";
 import {htmlDecode, htmlEncode} from 'js-htmlencode'

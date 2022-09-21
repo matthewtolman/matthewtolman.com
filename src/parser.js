@@ -15,7 +15,7 @@ import {
     Blog,
     Elem,
     File
-} from './types'
+} from './types.jjs'
 
 type XmlBlogTuple = [any, Blog]
 

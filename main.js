@@ -1,4 +1,3 @@
-require('ts-node').register()
 const Generator = require('./src/generator')
 const path = require('path')
 const fs = require('fs')
