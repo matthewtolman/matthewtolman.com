@@ -1,0 +1,27 @@
+digraph {
+    rankdir="LR";
+    {
+        rank="same";
+        "ID:2" [shape=box,label="ID F32"];
+        "ID:3" [shape=box,label="ID G99"];
+        "ID:4" [shape=box,label="ID D42"];
+        "ID:1" [shape=box,label="ID G72"];
+    }
+
+
+    subgraph details {
+        rankdir="TB";
+        rank="same";
+        edge[style="invisible",dir="none"];
+        "Page 4" -> "Page 3" -> "Page 2" -> "Page 1";
+        "Page 1" -> "Page 2" -> "Page 3" -> "Page 4";
+    }
+
+    "ID:4" -> "ID:3" -> "ID:2" -> "ID:1";
+    "ID:1" -> "ID:2" -> "ID:3" -> "ID:4";
+
+    "ID:1" -> "Page 1";
+    "ID:2" -> "Page 2";
+    "ID:3" -> "Page 3";
+    "ID:4" -> "Page 4";
+}

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Settings: {{blogTitle}}</title>
+
+        <link rel="icon" href="{{favicon_basic}}">
+        <link rel="icon" href="{{favicon_svg}}" type="image/svg+xml">
+        <link rel="apple-touch-icon" href="{{favicon_apple_icon}}">
+
+        {{{global_assets}}}
+    </head>
+    <body>
+        <div class="body">
+            <header>
+                <a href="#main" class="a11y-sr-only">Skip to Content</a>
+            </header>
+            <nav>{{{navigation}}}</nav>
+            <main id="main" class="post">
+                {{{settings_html}}}
+                <p>
+                    These settings are not just to make using this site better, but they are an experiment to see if your privacy is worth more than small conveniences.
+                    Most settings pages require sharing your personal data, usually by making an online account or using cookies to track you.
+                    We setup a different system.
+                </p>
+                <p>
+                    All of the data you enter on this page is stored on your device and stays on your device.
+                    Your settings are not saved to cookies, the cloud, a server, or an online account.
+                    This does mean your settings are not shared across devices (a small convenience), but it does mean we do not and cannot steal, sell, or take your data.
+                </p>
+                <p>
+                    We are hoping that by small experiments like these, we can start a new trend where your data stays yours.
+                    We're also hoping that there is a trend to giving features to users without requiring them to give up their privacy by creating an account.
+                </p>
+                <p>
+                    Like most experiments, not much may come from this one.
+                    However, we believe that this is an experiment worth trying, and since tech companies have repeatedly shown they won't try this kind of experiment,
+                    we decided to step up to the plate.
+                </p>
+            </main>
+            <footer>
+                {{privacyStatement}} <br />
+                &copy; {{copyright}}
+            </footer>
+        </div>
+    </body>
+</html>

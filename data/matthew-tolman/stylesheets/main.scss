@@ -1,0 +1,385 @@
+@use "sass:math";
+
+//////////////////////////
+// Variable Declarations
+//////////////////////////
+
+/*************
+* Dimensions
+**************/
+
+$nav-height: 3em;
+$content-width: 70em;
+$nav-width: $content-width;
+
+$nav-footer-height: $nav-height * 4 + 3em;
+
+/*************
+* Font Families
+**************/
+$font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
+$arial-font-family: Arial, 'Verdana', 'Tahoma', sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
+$comic-sans-font-family: 'Comic Sans MS', 'Comic Sans', 'Verdana', 'Tahoma', sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
+$open-dyslexic-font-family: 'OpenDyslexic', 'Comic Sans MS', 'Comic Sans', 'Verdana', 'Tahoma', sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
+
+/*************
+* Mono Font Families
+**************/
+$mono-font-family: 'Consolas', 'Courier New', monospace;
+$courier-new-mono-font-family: 'Courier New', monospace;
+$open-dyslexic-mono-font-family: 'OpenDyslexicMono', monospace;
+
+/*************
+* Colors
+**************/
+
+$nav-border-color: rgba(0, 0, 0, 0.2);
+$main-border-color: rgba(0, 0, 0, 0.05);
+
+$white: #fff;
+$black: #111;
+
+$color: $black;
+$bg-color: $white;
+
+$footer-bg-color: #f8f8f8;
+$footer-fg-color: $color;
+
+$blue: #0645ADFF;
+
+//////////////////////////
+// Mixin Declarations
+//////////////////////////
+
+@import "../../common";
+
+//////////////////////////
+// Site Styling
+//////////////////////////
+
+@include font-face('OpenDyslexicMono', 'Regular', normal, normal, swap);
+
+@include font-face('OpenDyslexic', 'Regular', normal, normal, swap);
+
+@include font-face('OpenDyslexic', 'Bold', bold, normal, swap);
+
+@include font-face('OpenDyslexic', 'Bold-Italic', bold, italic, swap);
+
+@include font-face('OpenDyslexic', 'Italic', normal, italic, swap);
+
+@include html-styles($color, $bg-color, $footer-bg-color, $font-size, $line-height, $letter-spacing, $word-spacing, $font-family, $mono-font-family);
+
+@include layout-styles-normal-nav($content-width, $nav-height, $nav-footer-height, $nav-width, $paragraph-spacing, $main-border-color, $nav-border-color, $white, $footer-bg-color, $footer-fg-color);
+
+@include global-focus();
+
+@include settings-page(settings);
+
+@include anchor-offset(-($nav-height + 1em));
+
+footer {
+  line-height: math.div($nav-height, 2) + 0.5em;
+  text-align: center;
+}
+
+.small-nav .settings-link svg {
+  margin-top: 0.75em
+}
+
+#__top {
+  top: -20em;
+}
+
+img {
+  max-width: 100%;
+}
+
+.blog-icon-link svg {
+  margin-top: 0.5em;
+}
+
+@include link-styles($blue);
+
+//////////////////////////
+// Component Styling
+//////////////////////////
+
+ul.results {
+  list-style: none;
+  margin-block: 0;
+  padding-inline: 0;
+}
+
+.next-prev {
+  margin-top: 1em;
+  display: flex;
+  justify-content: space-between;
+
+  .older-posts-link {
+    align-self: flex-end;
+  }
+
+  .newer-posts-link {
+    align-self: flex-start;
+  }
+}
+
+main {
+  @include for-tablet-portrait-up {
+    padding-bottom: 30px;
+  }
+  @include for-phone-only {
+    padding-bottom: 50px;
+  }
+  min-height: calc(100vh - 7em);
+}
+
+article {
+  img {
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.to-top {
+  display: none;
+}
+
+.to-top-real {
+  display: block;
+  position: fixed;
+  @supports (position: sticky) {
+    position: sticky;
+    left: 100%;
+  }
+
+  &, &:hover, &:focus {
+    color: transparent;
+  }
+
+  margin-right: 1.5em;
+  margin-bottom: 1.5em;
+  right: 0;
+  bottom: 1em;
+  width: 50px;
+  height: 50px;
+  @include for-phone-only {
+    width: 40px;
+    height: 40px;
+  }
+  overflow: hidden;
+  color: transparent;
+  border-radius: 50%;
+  background-color: $blue;
+  opacity: 0.0;
+  transition: opacity 0.5s ease-in;
+
+  &::after {
+    content: '';
+    width: 1px;
+    height: 1px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -82%);
+    border: 15px solid transparent;
+    @include for-phone-only {
+      border-width: 10px;
+    }
+    border-bottom-color: white;
+    position: absolute;
+  }
+}
+
+.to-top-real.show {
+  opacity: 0.4;
+
+  &:hover, &:focus {
+    transition: none;
+    opacity: 1;
+  }
+}
+
+//////////////////////////
+// Dark Mode
+//////////////////////////
+
+@include dark-theme($footer-bg-color);
+
+//////////////////////////
+// Fonts
+//////////////////////////
+
+/*************
+* Text Fonts
+**************/
+
+@include text-font(default, $font-family);
+
+@include text-font(open-dyslexic, $open-dyslexic-font-family);
+
+@include text-font(arial, $arial-font-family);
+
+@include text-font(comic-sans, $comic-sans-font-family);
+
+/*************
+* Code Fonts
+**************/
+
+@include code-font(default, $mono-font-family);
+
+@include code-font(open-dyslexic, $open-dyslexic-mono-font-family);
+
+@include code-font(courier-new, $courier-new-mono-font-family);
+
+//////////////////////////
+// Accessibility Styles
+//////////////////////////
+
+@include a11y-increased-styles($increased-letter-spacing, $increased-word-spacing, $increased-line-height, $increased-paragraph-spacing);
+
+//////////////////////////
+// Highlight JS
+//////////////////////////
+
+@mixin hljs-theme() {
+  pre code.hljs {
+    color: $color;
+    background: $footer-bg-color
+  }
+
+  .hljs-comment, .hljs-quote {
+    color: #a0a1a7;
+    font-style: italic
+  }
+
+  .hljs-doctag, .hljs-formula, .hljs-keyword {
+    color: #a626a4
+  }
+
+  .hljs-deletion, .hljs-name, .hljs-section, .hljs-selector-tag, .hljs-subst {
+    color: #e45649
+  }
+
+  .hljs-literal {
+    color: #0184bb
+  }
+
+  .hljs-addition, .hljs-attribute, .hljs-meta .hljs-string, .hljs-regexp, .hljs-string {
+    color: #50a14f
+  }
+
+  .hljs-attr, .hljs-number, .hljs-selector-attr, .hljs-selector-class, .hljs-selector-pseudo, .hljs-template-variable, .hljs-type, .hljs-variable {
+    color: #986801
+  }
+
+  .hljs-bullet, .hljs-link, .hljs-meta, .hljs-selector-id, .hljs-symbol, .hljs-title {
+    color: #4078f2
+  }
+
+  .hljs-built_in, .hljs-class .hljs-title, .hljs-title.class_ {
+    color: #c18401
+  }
+}
+
+@mixin hljs-dark-theme() {
+  pre code.hljs {
+    color: invert($color);
+    background: invert($footer-bg-color);
+  }
+  .hljs-keyword, .hljs-operator, .hljs-pattern-match {
+    color: #f92672
+  }
+  .hljs-function, .hljs-pattern-match .hljs-constructor {
+    color: #61aeee
+  }
+  .hljs-function .hljs-params {
+    color: #a6e22e
+  }
+  .hljs-function .hljs-params .hljs-typing {
+    color: #fd971f
+  }
+  .hljs-module-access .hljs-module {
+    color: #7e57c2
+  }
+  .hljs-constructor {
+    color: #e2b93d
+  }
+  .hljs-constructor .hljs-string {
+    color: #9ccc65
+  }
+  .hljs-comment, .hljs-quote {
+    color: #b18eb1;
+    font-style: italic
+  }
+  .hljs-doctag, .hljs-formula {
+    color: #c678dd
+  }
+  .hljs-deletion, .hljs-name, .hljs-section, .hljs-selector-tag, .hljs-subst {
+    color: #e06c75
+  }
+  .hljs-literal {
+    color: #56b6c2
+  }
+  .hljs-addition, .hljs-attribute, .hljs-meta .hljs-string, .hljs-regexp, .hljs-string {
+    color: #98c379
+  }
+  .hljs-built_in, .hljs-class .hljs-title, .hljs-title.class_ {
+    color: #e6c07b
+  }
+  .hljs-attr, .hljs-number, .hljs-selector-attr, .hljs-selector-class, .hljs-selector-pseudo, .hljs-template-variable, .hljs-type, .hljs-variable {
+    color: #d19a66
+  }
+  .hljs-bullet, .hljs-link, .hljs-meta, .hljs-selector-id, .hljs-symbol, .hljs-title {
+    color: #61aeee
+  }
+}
+
+pre code.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 1em
+}
+code.hljs {
+  padding: 3px 5px
+}
+
+.hljs-emphasis {
+  font-style: italic
+}
+
+.hljs-strong {
+  font-weight: 700
+}
+
+.hljs-link {
+  text-decoration: underline
+}
+
+@include hljs-theme();
+
+.dark-theme pre code.hljs {
+  -webkit-filter: invert(100%);
+  filter: invert(100%);
+}
+
+.dark-theme {
+  @include hljs-dark-theme();
+}
+
+@media (prefers-color-scheme: dark) {
+  pre code.hljs {
+    -webkit-filter: invert(100%);
+    filter: invert(100%);
+  }
+
+  @include hljs-dark-theme();
+
+  .light-theme pre code.hljs {
+    -webkit-filter: unset;
+    filter: unset;
+  }
+
+  .light-theme {
+    @include hljs-theme();
+  }
+}

@@ -1,0 +1,7 @@
+digraph {
+    rankdir="TB";
+    overlap=true;
+    ranksep=0;
+    node[shape=record];
+    pg1 [label="<f1>Page 1|<f2>Page 2|<f2>Page 3|<f2>Page 4"];
+}

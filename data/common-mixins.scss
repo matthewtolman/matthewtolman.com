@@ -1,0 +1,395 @@
+
+//////////////////////////
+// Mixin Declarations
+//////////////////////////
+
+/*************
+* Breakpoints
+**************/
+
+@mixin for-phone-only {
+  @media (max-width: $phone-max) { @content; }
+}
+@mixin for-tablet-portrait-up {
+  @media (min-width: $tablet-portrait-min) { @content; }
+}
+@mixin for-tablet-portrait-down {
+  @media (max-width: $tablet-portrait-max) { @content; }
+}
+@mixin for-tablet-landscape-up {
+  @media (min-width: $tablet-landscape-min) { @content; }
+}
+@mixin for-tablet-landscape-down {
+  @media (max-width: $tablet-landscape-max) { @content; }
+}
+@mixin for-desktop-up {
+  @media (min-width: $desktop-min) { @content; }
+}
+@mixin for-desktop-down {
+  @media (max-width: $desktop-max) { @content; }
+}
+@mixin for-desktop-large-up {
+  @media (min-width: $desktop-large-min) { @content; }
+}
+
+/*************
+* Site stylings
+**************/
+
+@mixin html-styles($color, $bg-color, $footer-bg-color, $font-size, $line-height, $letter-spacing, $word-spacing, $default-font-family, $default-mono-font-family) {
+  :root {
+    background: $footer-bg-color;
+    --font-size: $font-size;
+  }
+
+  body {
+    font-family: $default-font-family;
+    color: $color;
+    background: $bg-color;
+    margin: 0;
+    font-variant-ligatures: none;
+    font-size: $font-size;
+    font-size: var(--font-size);
+    line-height: $line-height;
+    letter-spacing: $letter-spacing;
+    word-spacing: $word-spacing;
+  }
+
+  pre, code {
+    font-family: $default-mono-font-family;
+  }
+}
+
+@mixin layout-styles-normal-nav($content-width, $nav-height, $nav-footer-height, $nav-width, $paragraph-spacing, $main-border-color, $nav-border-color, $nav-bg-color, $footer-bg-color, $footer-fg-color) {
+
+  //////////////////////////
+  // Nav and Footer Styling
+  //////////////////////////
+
+  nav div ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    li:first-child + li {
+      margin-left: 1.5em
+    }
+  }
+
+  .small-nav {
+    @include for-tablet-portrait-up {
+      display: none;
+    }
+  }
+
+  .large-nav {
+    @include for-phone-only {
+      display: none;
+    }
+  }
+
+  nav div {
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 0 2px 2px 1px $nav-border-color;
+    left: 0;
+    right: 0;
+    top: 0;
+    background: $nav-bg-color;
+  }
+
+  footer {
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 -2px 1px $nav-border-color;
+    background: $footer-bg-color;
+    color: $footer-fg-color;
+  }
+
+  nav div, footer {
+    box-sizing: border-box;
+    padding: 0 2em 0;
+    line-height: $nav-height;
+    height: $nav-height;
+    max-width: $nav-width;
+    margin: 0 auto;
+  }
+
+  main {
+    max-width: $content-width;
+    margin: 0 auto;
+    box-sizing: border-box;
+    @include for-phone-only {
+      padding: 1em;
+    }
+    @include for-tablet-portrait-up {
+      padding: 1em 3em;
+    }
+    @include for-tablet-landscape-up {
+      padding: 1em 5em;
+    }
+    border-left: 1px solid $main-border-color;
+    border-right: 1px solid $main-border-color;
+    min-height: calc(100vh - $nav-footer-height);
+
+    article {
+      overflow-x: hidden;;
+    }
+  }
+
+  p {
+    margin-top: $paragraph-spacing;
+  }
+}
+
+
+@mixin layout-styles-fixed-nav($content-width, $nav-height, $nav-footer-height, $paragraph-spacing, $main-border-color, $nav-border-color, $nav-bg-color, $footer-bg-color, $footer-fg-color) {
+
+  //////////////////////////
+  // Nav and Footer Styling
+  //////////////////////////
+
+  nav div ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    li:first-child + li {
+      margin-left: 1.5em
+    }
+  }
+
+  .small-nav {
+    @include for-tablet-portrait-up {
+      display: none;
+    }
+  }
+
+  .large-nav {
+    @include for-phone-only {
+      display: none;
+    }
+  }
+
+  nav div {
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 0 2px 2px 1px $nav-border-color;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    background: $nav-bg-color;
+  }
+
+  footer {
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 -2px 1px $nav-border-color;
+    background: $footer-bg-color;
+    color: $footer-fg-color;
+  }
+
+  nav div, footer {
+    box-sizing: border-box;
+    padding: 0 2em 0;
+    line-height: $nav-height;
+    height: $nav-height;
+  }
+
+  main {
+    max-width: $content-width;
+    margin: $nav-height auto 0;
+    box-sizing: border-box;
+    @include for-phone-only {
+      padding: 1em;
+    }
+    @include for-tablet-portrait-up {
+      padding: 1em 3em;
+    }
+    @include for-tablet-landscape-up {
+      padding: 1em 5em;
+    }
+    border-left: 1px solid $main-border-color;
+    border-right: 1px solid $main-border-color;
+    min-height: calc(100vh - $nav-footer-height);
+  }
+
+  p {
+    margin-top: $paragraph-spacing;
+  }
+}
+
+@mixin global-focus($width: 5px) {
+  * {
+    &:focus {
+      outline: 5px auto #175dcb;
+      outline: 5px auto Highlight;
+      outline: 5px auto -webkit-focus-ring-color;
+    }
+  }
+}
+
+@mixin settings-page($class) {
+  .#{$class} .range-div {
+    display: flex;
+    label {
+      padding-left: 1ch;
+    }
+  }
+
+  .#{$class} fieldset {
+    display: table;
+    div {
+      display: table-row;
+      > * {
+        display: table-cell;
+      }
+      label {
+        padding-right: 1ch;
+      }
+      input + label {
+        padding-left: 1ch;
+        padding-right: 0;
+      }
+    }
+  }
+}
+
+@mixin link-styles($color: #0645ADFF) {
+  a {
+    text-decoration: none;
+    &, &:visited {
+      color: $color;
+    }
+    &:hover, &:focus {
+      text-decoration: underline;
+      color: darken($color, 13%);
+    }
+  }
+}
+
+@mixin anchor-offset($offset) {
+  a.anchor {
+    display: block;
+    position: relative;
+    top: $offset;
+    visibility: hidden;
+  }
+}
+
+/*************
+* Dark Mode (In-progress)
+**************/
+
+@mixin dark-theme($footer-bg-color) {
+  .dark-theme {
+    -webkit-filter: invert(100%);
+    filter: invert(100%);
+    img {
+      filter: invert(100%);
+    }
+    & > * {
+      background: $bg-color;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .dark-theme {
+      -webkit-filter: unset;
+      filter: unset;
+      & > * {
+        background: unset;
+      }
+    }
+    :root {
+      background: invert($footer-bg-color);
+      -webkit-filter: invert(100%);
+      filter: invert(100%);
+    }
+    img {
+      filter: invert(100%);
+    }
+
+    .light-theme {
+      -webkit-filter: invert(100%);
+      filter: invert(100%);
+      background: $bg-color;
+      img {
+        filter: initial;
+      }
+    }
+  }
+}
+
+
+/*************
+* Fonts
+**************/
+
+@mixin font-face($name, $suffix, $weight, $style, $display) {
+  @font-face {
+    @if ($suffix == "") {
+      font-family: $name;
+      src: url('/fonts/' + $name + '.eot');
+      src: local($name), local($name),
+      url('/fonts/' + $name + '.eot?#iefix') format('embedded-opentype'),
+      url('/fonts/' + $name + '.woff2') format('woff2'),
+      url('/fonts/' + $name + '.woff') format('woff'),
+      url('/fonts/' + $name + '.ttf') format('truetype'),
+      url('/fonts/' + $name + '.svg#' + $name + '') format('svg');
+    } @else {
+      font-family: $name;
+      src: url('/fonts/' + $name + '.eot');
+      src: local($name + ' ' + $suffix), local($name + '-' + $suffix),
+      url('/fonts/' + $name + '-' + $suffix + '.eot?#iefix') format('embedded-opentype'),
+      url('/fonts/' + $name + '-' + $suffix + '.woff2') format('woff2'),
+      url('/fonts/' + $name + '-' + $suffix + '.woff') format('woff'),
+      url('/fonts/' + $name + '-' + $suffix + '.ttf') format('truetype'),
+      url('/fonts/' + $name + '-' + $suffix + '.svg#' + $name + '-' + $suffix + '') format('svg');
+    }
+    font-weight: $weight;
+    font-style: $style;
+    font-display: $display;
+  }
+}
+
+/*************
+* Text Fonts
+**************/
+
+@mixin text-font($name, $font-family) {
+  .#{$name}-text-font {
+    font-family: $font-family;
+  }
+}
+
+/*************
+* Code Fonts
+**************/
+
+@mixin code-font($name, $font-family) {
+  .#{$name}-code-font pre, .#{$name}-code-font code, option.#{$name}-code-font {
+    font-family: $font-family;
+  }
+}
+
+/*************
+* A11Y
+**************/
+
+@mixin a11y-increased-styles($increased-letter-spacing, $increased-word-spacing, $increased-line-height, $increased-paragraph-spacing) {
+  .a11y-increased-letter-spacing {
+    letter-spacing: $increased-letter-spacing;
+  }
+
+  .a11y-increased-word-spacing {
+    word-spacing: $increased-word-spacing;
+  }
+
+  .a11y-increased-line-height {
+    line-height: $increased-line-height;
+  }
+
+  .a11y-increased-paragraph-spacing p {
+    margin-top: $increased-paragraph-spacing
+  }
+}

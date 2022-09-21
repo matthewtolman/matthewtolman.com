@@ -1,0 +1,37 @@
+//////////////////////////
+// Variable Declarations
+//////////////////////////
+
+/*************
+* Text Rendering
+**************/
+
+$letter-spacing: 0.12ch;
+$word-spacing: 0.16ch;
+$line-height: 1.65em;
+$paragraph-spacing: 2em;
+
+$font-size: 100%;
+
+/*************
+* Accessibility
+**************/
+
+$increased-letter-spacing: 0.35ch;
+$increased-word-spacing: 1.225ch;
+$increased-line-height: 2em;
+$increased-paragraph-spacing: 3.5em;
+
+/*************
+* Breakpoints
+**************/
+
+$desktop-large-min: 1800px;
+$desktop-min: 1200px;
+$tablet-landscape-min: 900px;
+$tablet-portrait-min: 600px;
+
+$desktop-max: $desktop-large-min - 1px;
+$tablet-landscape-max: $desktop-min - 1px;
+$tablet-portrait-max: $tablet-landscape-min - 1px;
+$phone-max: $tablet-portrait-min - 1px;

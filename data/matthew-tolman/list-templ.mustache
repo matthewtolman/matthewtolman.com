@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Posts: {{blogTitle}}</title>
+
+    <meta property="og:title" content="{{title}}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{url}}">
+    <meta property="og:description" content="{{description}}">
+    <meta property="og:image" content="{{description_img}}">
+
+    <link rel="icon" href="{{favicon_basic}}">
+    <link rel="icon" href="{{favicon_svg}}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{favicon_apple_icon}}">
+
+    {{{global_assets}}}
+    <script>if(window.Intl && Intl.DateTimeFormat){window.formatDate=(function(){const f = new Intl.DateTimeFormat();return function (date){return f.format(date)}})()}</script>
+</head>
+<body>
+<div class="body">
+    <header>
+        <a href="#main" class="a11y-sr-only">Skip to Content</a>
+        <nav>{{{navigation}}}</nav>
+    </header>
+    <main id="main">
+        <h1>Posts</h1>
+        <ul class="results">
+            {{#articles}}
+                <li>
+                    <section>
+                        <h2><a href="{{uri}}">{{title}}</a></h2>
+                        <div class="author">Written by {{author.name}}</div>
+                        Published: <time id="time-{{id}}" datetime="{{time}}">{{time}}</time>
+                        <script>if(window.formatDate)document.getElementById('time-{{id}}').innerText=window.formatDate(new Date('{{time}}'))</script>
+                        <p>
+                            {{description}}
+                        </p>
+                    </section>
+                </li>
+            {{/articles}}
+        </ul>
+        <div class="next-prev">{{{prevLink}}}{{{nextLink}}}</div>
+    </main>
+    <footer>
+        {{privacyStatement}} <br />
+        &copy; {{copyright}}
+    </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,9 @@
+digraph {
+    labelloc="t"
+    label="Scrolling through a file\n"
+    book[shape=record,label=<<B>File</B>|Line 1|{{Line 2|Line 3|Line 4|Line 5}|Screen}|Line 6| Line 7| Line 8| Line 9|Line 10>];
+    book->book2 [label="  Page down"];
+    book2[shape=record,label=<<B>File</B>|Line 1|Line 2|Line 3|Line 4|Line 5|{{Line 6| Line 7| Line 8| Line 9}|Screen}|Line 10>];
+    book2->book3 [label="  Scroll Up 2"];
+    book3[shape=record,label=<<B>File</B>|Line 1|Line 2|Line 3|{{Line 4|Line 5|Line 6| Line 7}|Screen}| Line 8| Line 9|Line 10>];
+}

@@ -1,0 +1,47 @@
+
+//////////////////////////
+// Variable Declarations
+//////////////////////////
+
+@import "./common-vars";
+
+//////////////////////////
+// Mixin Declarations
+//////////////////////////
+
+@import "common-mixins";
+
+//////////////////////////
+// Styles
+//////////////////////////
+
+.desktop-only {
+  @include for-tablet-landscape-down {
+    display: none;
+  }
+}
+
+//////////////////////////
+// Accessibility Styles
+//////////////////////////
+
+.a11y-sr-only, .a11y-sr-only-nf {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.a11y-sr-only:focus {
+  width: initial;
+  height: initial;
+  padding: 0.5em 0.25em;
+  margin: 0;
+  overflow: initial;
+  clip: initial;
+  background: white;
+}
