@@ -156,7 +156,7 @@ Forward iterators are like the sand in an hour glass.
 The sand flows one way to the bottom and doesn't flow up.
 But, you can always turn the hour glass over to start at the beginning.
 
-~img::src=/imgs/chains-buckets-iteration/hour-glass.svg::alt=Image of an hour glass::
+~img::src=/imgs/chains-buckets-iteration/hour-glass.svg::alt=Image of an hour glass::height=300px::
 
 Input and forward iterators are the closest C++ has to JavaScript iterators.
 Everything else C++ has is more powerful and can better represent different types of data structures.
