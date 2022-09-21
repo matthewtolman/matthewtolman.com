@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "build": "node main.js",
+    "format": "prettier --write \"src/**/*.js\"",
     "start": "bash prep-imgs.sh && npm run build && onchange 'data/**/*' 'src/*' -- npm run build"
   },
   "author": "",
@@ -22,6 +23,7 @@
     "sass": "^1.44.0"
   },
   "devDependencies": {
-    "onchange": "^7.1.0"
+    "onchange": "^7.1.0",
+    "prettier": "^2.7.1"
   }
 }

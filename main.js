@@ -1,6 +1,5 @@
 const Generator = require('./src/generator')
 const path = require('path')
-const fs = require('fs')
 
 const {promises: {readdir}} = require('fs')
 
