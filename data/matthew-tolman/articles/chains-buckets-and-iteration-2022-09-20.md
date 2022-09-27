@@ -2,7 +2,7 @@ Back in high school, I worked on robots with a few other students.
 When we built our robots we had motors and wheels that were a foot or two apart.
 To transfer the energy from our motor to our wheels, we used chains.
 
-~img::src=/imgs/chains-buckets-iteration/robot-wheels-with-chains.svg::alt=Diagram of a robot where the wheel and motor are separated by a large distance::
+~img::src=/imgs/chains-buckets-iteration/robot-wheels-with-chains.svg::alt=Diagram of a robot where the wheel and motor are separated by a large distance:;
 
 As the motor spun, it iterated through the links in the chain sequentially.
 The motor never skipped a link in the chain, it always iterated in order
@@ -13,7 +13,7 @@ Even then, it never skipped a link.
 
 When working on our robots, we often had buckets with parts or other odd ends.
 
-~img::src=/imgs/chains-buckets-iteration/sand-buckets.svg::alt=Buckets filled with stuff::
+~img::src=/imgs/chains-buckets-iteration/sand-buckets.svg::alt=Buckets filled with stuff:;
 
 Whenever we needed a part, we'd go to a bucket and see if it was there.
 Usually, we knew which bucket we needed (e.g. fourth one from the right) and we'd go straight to that bucket,
@@ -89,13 +89,13 @@ Forward iterators are like the sand in an hour glass.
 The sand flows one way to the bottom and doesn't flow up.
 But, you can always turn the hour glass over to restart at the beginning.
 
-~img::src=/imgs/chains-buckets-iteration/hour-glass.svg::alt=Image of an hour glass::height=300px::
+~img::src=/imgs/chains-buckets-iteration/hour-glass.svg::alt=Image of an hour glass::height=300px:;
 
 Bidirectional iterators are like our chain on the robot.
 We can go forwards and backwards, but we have to do so sequentially.
 It can also be thought of as iterating a doubly-linked list.
 
-~img::src=/imgs/chains-buckets-iteration/bidirectional-iteration.svg::alt=Diagram of a doubly-linked list where nodes are linked both forwards and backwards::
+~img::src=/imgs/chains-buckets-iteration/bidirectional-iteration.svg::alt=Diagram of a doubly-linked list where nodes are linked both forwards and backwards:;
 
 Random access iterators are the most powerful type of iterator in C++.
 They allow bidirectional iteration (forwards and backwards), but they also allow skipping around which is very powerful.

@@ -110,7 +110,7 @@ function flattenTokens(tokens) {
 
 function headerId(header, blog, references = {}, sections = []) {
   const content = contentToHtml(header.data, blog, references, sections).join('');
-  return content.replace(/[^a-zA-Z0-9_]/, '--').toLowerCase();
+  return content.replace(/[^a-zA-Z0-9_]/g, '--').toLowerCase();
 }
 
 function generateCodeBlock(lang, code) {
@@ -203,7 +203,12 @@ function contentToHtml(tokens, blog, references = {}, sections = []) {
             .filter((t) => t != 'tag' && t)
             .map((key) => `${key}="${htmlEncode(token.attrs[key])}"`)
             .join(' ');
-          res.push(`<${token.attrs.tag} ${attrs} />`);
+          if (token.data.length == 0) {
+              res.push(`<${token.attrs.tag} ${attrs} />`);
+          }
+          else {
+              res.push(`<${token.attrs.tag} ${attrs}>${token.data.join('\n')}</${token.attrs.tag}>`);
+          }
           break;
         }
         case ArticleTokenType.REF: {

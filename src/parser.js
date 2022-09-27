@@ -246,7 +246,7 @@ function parse(str) {
   };
 
   const tokenRegex =
-    /(?<bold_italic>\*\*\*[\w \t\.,\(\)]+\*\*\*)|(?<bold>\*\*[\w \t\.,\(\)]+\*\*)|(?<italic>\*[\w \t\.,\(\)]+\*)|(?<list>^[^\S\r\n]*(?<list_char>[\*\-$])\s(?<list_text>.*))|((?<header_level>#{1,6})(?<header>.*))|(?<obj_link>\[\[[\w:\-]+]])|(?<link>\((?<link_text>[\w\s]+)\)\[(?<link_ref>[\w\:\/\.\#\&\?\=%]+)\])|(?<ref>\^\[[\w-]+\])|(?<references>@References\n(\s*(?:\*\s*(?:[\w\-]+)(\s*\|\s*(?:[\w\-]+):\s*(?:[^\n]+))*))*)|~(?<elem>\w+(::[\w-]+=(:?[^:])*)+::)|(?<code_block>```(?:\w+)\n(?:(.|\n)*)```)|(?<emphasis>`.*`)|(?<toc>\[toc\])|(?<p_break>\n\n+)|(?<blockquote>(^>+.*\n)+)|(?<escaped>\\.)|[\w\s\."',]+?|./gm;
+    /(?<bold_italic>\*\*\*[\w \t\.,\(\)]+\*\*\*)|(?<bold>\*\*[\w \t\.,\(\)]+\*\*)|(?<italic>\*[\w \t\.,\(\)]+\*)|(?<list>^[^\S\r\n]*(?<list_char>[\*\-$])\s(?<list_text>.*))|((?<header_level>#{1,6})(?<header>.*))|(?<obj_link>\[\[[\w:\-]+]])|(?<link>\((?<link_text>[\w\s]+)\)\[(?<link_ref>[\w\:\/\.\#\&\?\=%\-]+)\])|(?<ref>\^\[[\w-]+\])|(?<references>@References\n(\s*(?:\*\s*(?:[\w\-]+)(\s*\|\s*(?:[\w\-]+):\s*(?:[^\n]+))*))*)|~(?<elem>(?<elem_tag>\w+)(?<attrs>(::[\w-]+=(:?[^:])*?)+?)(::(?<content>.+?::~\/\w+))?:;)|(?<code_block>```(?:\w+)\n(?:(.|\n)*?)```)|(?<emphasis>`.*`)|(?<toc>\[toc\])|(?<p_break>\n\n+)|(?<blockquote>(^>+.*\n)+)|(?<escaped>\\.)|[\w\s\."',]+?|./gm;
 
   let match;
   while ((match = tokenRegex.exec(str)) !== null) {
@@ -331,14 +331,14 @@ function parse(str) {
         data: [match[0].slice(1, -1)],
       });
     } else if (match.groups.elem) {
-      const pieces = (match.groups.elem || '').split('::');
+      const pieces = (match.groups.attrs || '').split('::');
       result.tokens.push({
         type: ArticleTokenType.ELEM,
-        data: [],
+        data: (match.groups.content) ? [match.groups.content.split(':')[0]] : [],
         attrs: pieces
           .slice(1)
           .map((s) => [s.slice(0, s.indexOf('=')), s.slice(s.indexOf('=') + 1)])
-          .reduce((a, c) => ({ ...a, [c[0]]: c[1] }), { tag: pieces[0] }),
+          .reduce((a, c) => ({ ...a, [c[0]]: c[1] }), { tag: match.groups.elem_tag }),
       });
     } else if (match.groups.code_block) {
       result.tokens.push(parseCodeBlock(match[0]));

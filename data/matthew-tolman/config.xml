@@ -13,17 +13,32 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <article published="Yes"
+                 title="Introduction to Localization and Language"
+                 id="article:introduction-to-localization-and-language"
+                 author="auth:mtolman" time="2022-09-27T00:00:00-0700"
+                 file="introduction-to-localization-and-language.md">
+            <description>
+                Localization is important to reach a global, international, and interlingual audience.
+                To do that, one of the first major hurdles is to design localization code and best
+                practices to be able to handle the diversities of human languages.
+
+                In this article, we cover the common unknowns of human langauges and how to adapt
+                code to handle them. We also talk about why avoiding certain sentence structures
+                and phrases can help.
+            </description>
+        </article>
+        <article published="Yes"
                  title="Chains, Buckets, and Iteration"
                  id="article:chains-buckets-and-iteration"
                  author="auth:mtolman" time="2022-09-20T00:00:00-0700"
                  file="chains-buckets-and-iteration-2022-09-20.md">
             <description>
-                Iteration is extremely common in life and computer science.
-                We iterate through ideas, thoughts, and routines.
-                We iterate through lists, arrays, and maps.
-                We iterate through single items and pages of items.
-                Sometimes we can jump around, other times we can only go one after the other.
-                This article explores different types of iteration.
+                Why does it matter what types of iterators we have?
+                Because it dictates how code can be written and how well code performs.
+
+                Our iterators constrain what kinds of abstractions we can put around our data structures.
+                Without nuance in our iterators, we can run into a "slowest common performance"
+                problem when we try to make generalized libraries and solutions.
             </description>
         </article>
     </articles>
