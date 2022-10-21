@@ -13,6 +13,19 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <article published="Yes"
+                 title="Why Care About Web Accessibility"
+                 id="article:web-accessibility-basics-2022"
+                 author="auth:mtolman" time="2022-10-20T00:00:00-0700"
+                 file="web-accessibility-basics-2022.md">
+            <description>
+                Anyone with an internet connection can access the internet.
+                But not everyone with access to the internet can use the internet.
+                Millions of people are excluded from using large parts of the internet,
+                and at no fault of their own.
+                Instead, it's the fault of websites and the people who build them.
+            </description>
+        </article>
+        <article published="Yes"
                  title="Introduction to Localization and Language"
                  id="article:introduction-to-localization-and-language"
                  author="auth:mtolman" time="2022-09-27T00:00:00-0700"

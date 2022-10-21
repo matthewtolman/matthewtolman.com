@@ -1,5 +1,7 @@
 [toc]
 
+## Introduction
+
 One of the most under-taught but highly important aspects of software development is localization.
 We live in an increasingly globalized world. As such, businesses who want a global audience need to
 localize their products and websites for different regions and languages, especially since English
