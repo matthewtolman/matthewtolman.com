@@ -45,7 +45,7 @@ investing heavier in alternative factory locations. India would be the next
 prime target for cheap labor and the U.S. would be good for stability in case
 of major, global occurrences (such as an escalation in a global conflict).
 
-### 2-3 Years
+## 2-3 Years
 
 This far out becomes a bit harder to predict since there's a lot of
 variables, so more of my predictions will have "conditions" in them.
@@ -184,7 +184,7 @@ of China. India would be charging into a major industrialization and modernizati
 era, spearheaded by newer development plants. China would be forced to adapt its
 economic strategy.
 
-### 6+ Years
+## 6+ Years
 
 "Made in India" not "Made in China" will be the new normal for most items. Some
 higher quality or national security related items will be made in the Americas,
@@ -203,7 +203,7 @@ significant adoption. However, many of their ideas would also start being
 incorporated into existing systems level languages to make those languages easier
 to use.
 
-### Conclusion
+## Conclusion
 
 No one can see the future, so these are all predictions. I may be wrong on
 everything, I may not be. It'll be interesting to see what I got right, and what
