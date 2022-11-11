@@ -183,10 +183,10 @@ California to go live somewhere cheaper.
 
 Also, by now most new manufacturing by larger companies would be happening outside
 of China. India would be charging into a major industrialization and modernization
-era, spearheaded by newer development plants. China would be forced to adapt its
+era, spearheaded by newer manufacturing plants. China would be forced to adapt its
 economic strategy. China would still be making products for many smaller companies,
 and any existing product lines that were setup in China would remain through the
-lifetime of the manufacturing process.
+lifetime of the products being made.
 
 ## 6+ Years
 
@@ -195,11 +195,11 @@ higher quality or national security related items will be made in the Americas,
 either the U.S. or Mexico. China will still have some manufacturing, but it will
 be transitioning to a post-manufacturing economy.
 
-If cloud or server costs are still rising, then most companies
-will be fleeing the cloud quickly. Also, microservices would pretty much be dead
-and efficient runtime would be lauded over quick development time. However, at this
-length of time most companies would be struggling to make and keep an online presence.
-If server costs were still rising, there would be a rise in more traditional
+If cloud or server costs are still rising, then most companies will be fleeing the
+cloud quickly if they have not already fled. Also, microservices would pretty much
+be dead and efficient runtime would be lauded over quick development time. However,
+at this length of time most companies would be struggling to make and keep an online
+presence. If server costs were still rising, there would be a rise in more traditional
 communications, such as calling, texting, talking in person, etc. Hybrid or remote
 work would really start dwindling after 5 years of increasing server costs.
 
@@ -225,6 +225,16 @@ selling points. The pitch would be to save on both the human time and skill cost
 as well as the server and infrastructure costs. Most of these new languages would
 prioritize static linking and easy deployments.
 
+Some newer languages would also really start thinking about how to train developers
+on their language. There will be increased experimentation on how to make learning
+quicker and more efficient for newer devs. Some languages will start splitting
+developers into "application builders" and "library builders", with each one getting
+content tailored to them. Some langauges will start focusing on interactive tutorials
+instead of long-form content pages. Others will start focusing on some more intense
+projects. A few will experiment with "language translations" where it shows examples
+from languages devs are familiar with, and then the equivalent (generally shorter)
+code in the new language. Some one else will come up with an idea not on this list.
+
 More unikernel and microkernel projects would also be emerging by now. These
 projects would again be retargetted to lowering server costs. Some of them may
 also be trying to make the development process easier, but that is not the primary
@@ -237,6 +247,10 @@ public's appetite for a while. At around the 8-10 year mark is when we'll see
 AR/VR refined enough and remarketed enough that it starts to capture the public's
 attention. Some new, very refined, device will most likely be what launches VR and
 AR in the public mind.
+
+Also, by now technology in schools will really be becoming part of the curriculum.
+Robotics, programming, etc. will be taught at least in the high school level at the
+vast majority of high schools.
 
 ## Conclusion
 
