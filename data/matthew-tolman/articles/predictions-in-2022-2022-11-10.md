@@ -36,7 +36,7 @@ of phone number changes, and with those changes I'm expecting that some
 people will be very upset when they realize how much terrible software
 has been written which assumes that phone numbers don't change for a
 person. Locked-out accounts will be commonplace for services with SMS-based
-two-factor authentication. Fortunately, it may not be so commonplace as to
+two-factor authentication. It may not be so commonplace as to
 be news-breaking, assuming that the recession doesn't hit so bad that phone
 number changes becomes widespread.
 
@@ -44,6 +44,13 @@ Manufacturing woes from China will start encouraging bigger companies to start
 investing heavier in alternative factory locations. India would be the next
 prime target for cheap labor and the U.S. would be good for stability in case
 of major, global occurrences (such as an escalation in a global conflict).
+
+We will start seeing more resurgence in movie theaters and film releases.
+Box-office numbers will start to return and there will be more hype around
+releasing in theaters rather than just on a platform. While some companies
+with large platforms (like Disney) will still try the "dual release" or
+"online only" release, other studios with smaller platforms will really
+start taking to the theaters.
 
 ## 2-3 Years
 
@@ -76,53 +83,32 @@ money. By around this time, Netflix (if it's still around and is scoring good
 license deals) may start calming down on its video game ambitions, though we will
 probably start seeing some announcements from their studios created in 2022.
 
+There will also start being a small movement to go away from "online all the time"
+and "pay a subscription each month" and an increased focus on "one-time pay products"
+or "pay to own". This movement will be small, but if service costs continue to rise
+then the movement will start growing.
+
 Larger video game companies will also be a bit more conservative in game genres
-and game ideas. A recession, or at least higher levels of inflation, will
-probably still be going on to some degree, so anything they can do to avoid
-unnecessary risk will be needed. At many studios, this will mean cancellation of
-internal projects and probably some layoffs.
+and game ideas. This may result in more indie studios with more outlandish ideas.
+However, it will also result in increased game cost, either through aggressive
+monetization or finally breaking the $60 price barrier.
 
-I'm also guessing that is during this time period where one of the current major
-social media platforms will probably fall (Meta, Twitter, TikTok, etc). Each
-platform will fall for a different reason. I'll go over how each company would
-fall if they did fall.
+During this time period is where one of the current major social media platforms
+will probably fall (Meta, Twitter, TikTok, etc). The fall won't be "the company
+no longer exists", but rather the "company is a shell of itself". Currently, there
+is a lot of turmoil across the social media space, and it doesn't look like the
+turmoil will be short-lived. TikTok is under intense pressure from many governments
+which are wanting to ban it. Meta is sinking billions into the metaverse with no
+end in sight, and the technology is too far away for it to become mainstream (I'm
+guessing 8-10 years before AR/VR is mainstream). Twitter is saddled with a debt so
+large the non-profitable company has to pay $1 billion dollars in interest annually.
+All of these factors, if not addressed quickly, can cause massive trouble for a
+major social media platform. I am predicting that some social media platforms
+will figure out their issues, so not all of them will fall. But at least one is
+going to struggle and will become a shell of itself as it undergoes massive
+restructuring.
 
-Meta would fall through its over-investment in the metaverse. I don't think Meta
-would disappear entirely, but it would become a shell of its former self, and
-Mark may have to step down form CEO (either voluntarily or involuntarily). Focus
-under new leadership would put efforts away from VR/AR and back onto the social
-platforms (a "right the ship"). This would then be coupled with either mass layoffs
-inside the VR departments, or just selling the VR divisions. Unfortunately, Meta
-doesn't face much opportunity for growth in the social media space by this point,
-so it probably won't rise to its former glory.
-
-Twitter would fall because of the Elon acquisition, and it would likely bring
-down Tesla with it. The Elon acquisition saddled a non-profitable company with
-massive amounts of debt. It also turned Twitter private, so selling shares to the
-public to raise cash is not an option. Even if it was, the shares would be
-so low in value compared to pre-privatization that it wouldn't be able to help much.
-Regardless of how competently Elon led Twitter, in this scenario it would damage his
-reputation a lot. Most likely, lots of Tesla stocks would have to be sold to try to
-keep the bird in the air for as long as possible and/or to pay back investors who
-funded the Musk deal in the first place. While Twitter and Tesla could still exist,
-neither would be underneath Elon, who would be forced out by investors (who would
-most likely file lawsuits to get money back). Additionally, several fines from the
-SEC or FTC would be involved, and some current lawsuits against Twitter may be lost.
-However, those fines and lawsuits would be supporting cast for the investor woes.
-
-TikTok would most likely fall due to being banned or removed in several countries,
-such as the U.S. Its position as a Chinese platform is already getting scrutiny
-from several governments. In this scenario, that scrutiny turns into banning. If
-TikTok did get ban, it would significantly weaken both future Chinese tech companies
-entering non-Chinese markets and non-Chinese companies associated with Chinese tech
-(including Chinese tech manufacturing plants). If TikTok did get banned, many
-companies would create exit strategies to remove their dependencies on China.
-Fortunately for TikTok, this type of fall wouldn't really involve an organizational
-collapse. There may be a reduction (through layoffs), but the company would still
-exist and be operating mostly as-is, but it would just be limited in the number of
-markets it could be in.
-
-If gig workers were ruled to be full employees of a company (such as Uber or Lyft),
+If gig workers are ruled to be full employees of a company (such as Uber or Lyft),
 by now we would be seeing greater financial strain on the gig-based companies with
 a few of them shutting their doors. Uber, Lyft, Doordash, etc. aren't currently
 profitable, and if they have to provide benefits and fair pay to drivers, then they
@@ -162,6 +148,14 @@ on the cloud would start investing in rewrites to a faster language, however if 
 costs are rising for 10 years straight then the internet will not have very many
 companies remaining and services will be a lot more expensive.
 
+If services were still rising prices, then "one-time pay" products would be really
+booming. Users would start preferring to pay for a DVD or a one-time Office
+subscription instead of paying for something that is "always online". Monthly
+fees would just be too much, and the "Software as a Service" business model would
+get a bad reputation. Some more services, including paid ones, wil start dying out.
+Of course, after the economy stabilizes for a few years, SaaS would come back, but
+just with a different name.
+
 By this time, if a multi-year recession had taken place, then there would be a lot
 of internet users with older, slower, machines. A large gap in technological power
 would emerge, with the elite few having newer, faster machines and everyone else
@@ -179,29 +173,70 @@ try to merge it with Android application development. If WASM is being used heav
 for native applications, Apple would be working on their own framework to keep devs
 using Macs and XCode for development, though they may not have it released by now.
 
+Additionally, if SaaS prices stabilized, then it would be staying around for a long
+time. Probably at least another decade. Stabilization could happen by: leaving the
+cloud, removing microservice architectures from products, using more efficient
+languages, and/or a restoration in supply chain costs and energy prices. Also, if
+SaaS and server prices stabilized, then hybrid and remote work would start growing
+more quickly. There would also be a larger exodus of highly-paid engineers leaving
+California to go live somewhere cheaper.
+
 Also, by now most new manufacturing by larger companies would be happening outside
 of China. India would be charging into a major industrialization and modernization
 era, spearheaded by newer development plants. China would be forced to adapt its
-economic strategy.
+economic strategy. China would still be making products for many smaller companies,
+and any existing product lines that were setup in China would remain through the
+lifetime of the manufacturing process.
 
 ## 6+ Years
 
 "Made in India" not "Made in China" will be the new normal for most items. Some
 higher quality or national security related items will be made in the Americas,
-either the U.S. or Mexico.
+either the U.S. or Mexico. China will still have some manufacturing, but it will
+be transitioning to a post-manufacturing economy.
 
 If cloud or server costs are still rising, then most companies
 will be fleeing the cloud quickly. Also, microservices would pretty much be dead
 and efficient runtime would be lauded over quick development time. However, at this
 length of time most companies would be struggling to make and keep an online presence.
+If server costs were still rising, there would be a rise in more traditional
+communications, such as calling, texting, talking in person, etc. Hybrid or remote
+work would really start dwindling after 5 years of increasing server costs.
+
+That said, if server costs had stabilized before now then remote work would really
+start taking off. There would also be startups dedicated to bringing remote work
+and remote training to traditional trade jobs, such as carpentry, plumbing, and
+electrical. These start-ups will be trying to address the shortage in trade jobs
+by increasing the effective working area of trades workers. How successful these
+companies will be is another matter.
+
+Regardless of whether the server costs have been rising for 2 or 5 years, there
+would be some interesting trends emerge in the technology space.
 
 Newer languages that combined both efficiency and ease of development would start
-to emerge. These would be compiled languages that either used efficient reference
-counting memory management, ownership, manual memory, or some new technique. They
-would just be coming onto the scene, so it would take a while before there was
-significant adoption. However, many of their ideas would also start being
-incorporated into existing systems level languages to make those languages easier
-to use.
+to emerge by this time. These would be compiled languages that either used efficient
+reference counting memory management, ownership, manual memory, or some new
+technique. They would just be coming onto the scene, so it would take a while
+before there was significant adoption. However, many of their ideas would also
+start being incorporated into existing systems level languages to make those
+languages easier to use. These languages would offer "ease of development",
+"increased developer productivity", and "low to no cost for running" as the main
+selling points. The pitch would be to save on both the human time and skill costs
+as well as the server and infrastructure costs. Most of these new languages would
+prioritize static linking and easy deployments.
+
+More unikernel and microkernel projects would also be emerging by now. These
+projects would again be retargetted to lowering server costs. Some of them may
+also be trying to make the development process easier, but that is not the primary
+focus. Consequently, they will remain more niche, though there will be slightly
+more adoption than there is now.
+
+It would be in this time period that VR and AR technologies would start to get
+refined enough to be cool. However, premature marketing will have soured the
+public's appetite for a while. At around the 8-10 year mark is when we'll see
+AR/VR refined enough and remarketed enough that it starts to capture the public's
+attention. Some new, very refined, device will most likely be what launches VR and
+AR in the public mind.
 
 ## Conclusion
 
