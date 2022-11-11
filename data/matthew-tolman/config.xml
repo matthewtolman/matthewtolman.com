@@ -13,6 +13,16 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <article published="Yes"
+                 title="Predictions in Tech: Looking Forward from 2022"
+                 id="article:predictions-tech-2022"
+                 author="auth:mtolman" time="2022-11-11T00:00:00-0700"
+                 file="predictions-in-2022-2022-11-10.md">
+            <description>
+                Some predictions of mine looking forward, focused mostly on the tech industry.
+                Made in 2022.
+            </description>
+        </article>
+        <article published="Yes"
                  title="Why Care About Web Accessibility"
                  id="article:web-accessibility-basics-2022"
                  author="auth:mtolman" time="2022-10-20T00:00:00-0700"
