@@ -250,7 +250,7 @@ AR in the public mind.
 
 Also, by now technology in schools will really be becoming part of the curriculum.
 Robotics, programming, etc. will be taught at least in the high school level at the
-vast majority of high schools.
+vast majority of school districts.
 
 ## Conclusion
 
