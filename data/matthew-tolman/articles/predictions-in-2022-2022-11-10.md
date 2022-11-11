@@ -144,17 +144,16 @@ Rust would still be around and still be talked about, but by this point it won't
 the hot new thing on the block. Also, its many warts and complexities would really
 be manifesting itself and would be slowing down large-scale adoption.
 In another 3-5 years of increasing server costs most companies that still exist
-on the cloud would start investing in rewrites to a faster language, however if server
-costs are rising for 10 years straight then the internet will not have very many
-companies remaining and services will be a lot more expensive.
+on the cloud would start investing in rewrites to a faster language.
 
-If services were still rising prices, then "one-time pay" products would be really
-booming. Users would start preferring to pay for a DVD or a one-time Office
-subscription instead of paying for something that is "always online". Monthly
-fees would just be too much, and the "Software as a Service" business model would
-get a bad reputation. Some more services, including paid ones, wil start dying out.
-Of course, after the economy stabilizes for a few years, SaaS would come back, but
-just with a different name.
+If services were still rising prices, then "one-time pay" products would be
+booming. Users would start preferring to pay to own a copy of a movie or software
+product instead of paying to use something. There will be a shift as well away from
+"always online" as simply bundling online services for one-time pay products wouldn't
+be cost-effective. Monthly fees would just be too much, and the "Software as a
+Service" business model would get a bad reputation. Some more services, including
+paid ones, wil start dying out. Of course, after the economy stabilizes for a few
+years, SaaS would come back, but just with a different name.
 
 By this time, if a multi-year recession had taken place, then there would be a lot
 of internet users with older, slower, machines. A large gap in technological power
