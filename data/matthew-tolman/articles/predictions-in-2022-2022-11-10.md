@@ -19,13 +19,15 @@ familiar with.
 
 ## Within a Year
 
-In less than a year from now, my predictions is that the energy and
-hardware costs for servers and data centers are going to rise. As such,
-the costs of cloud services (such as AWS) will also rise. With these
-rising costs, there will be two things that happen: more layoffs and
-rising costs for online services. There is a chance that
-these jumps in costs could be temporary and not much will change
-once companies stabilize to the adjusted costs.
+In less than a year from now, my predictions is that the energy and hardware costs
+for servers and data centers are going to rise. As such, the costs of cloud services
+(such as AWS) will also rise. With these rising costs, there will be two things that
+happen: more layoffs and rising costs for online services. Some companies will
+choose one route over the other, some will do both, and a few will be able to get
+away without any significant change. Some companies will start looking to move off
+of the cloud, but that will take time and I predict most companies will not jump
+off of cloud services next year. Instead, they'll do damage control with cost-cutting
+and/or revenue spiking.
 
 I'm also going to predict that prepaid phone plans will become more commonplace
 within the next year as they are cheaper, and in an age of rampant
@@ -37,8 +39,7 @@ people will be very upset when they realize how much terrible software
 has been written which assumes that phone numbers don't change for a
 person. Locked-out accounts will be commonplace for services with SMS-based
 two-factor authentication. It may not be so commonplace as to
-be news-breaking, assuming that the recession doesn't hit so bad that phone
-number changes becomes widespread.
+be news-breaking, but there will be an increase in account lockouts.
 
 Manufacturing woes from China will start encouraging bigger companies to start
 investing heavier in alternative factory locations. India would be the next
@@ -120,61 +121,71 @@ start climbing, and as they climb they will become less popular.
 
 Now we are really starting to get into theoretical territory.
 
-By this time, there will be more system-typed programming languages that are
-alternatives to both Rust and C/C++. While there are some languages today (like Zig),
+By this time, there will be more system-level programming languages that are
+competitors to both Rust and C/C++. While there are some languages today (like Zig),
 they aren't supported well enough or have a large enough community to be a true
 competitor. However, by this point some of those languages will be big enough to
-start gaining some traction. The fact that they're easier than Rust and closer to
-how the C/C++ community think will help them grow faster than Rust is growing. At
-the same time, Rust will be starting to get some well-developed libraries, but it
-will be struggling even more with the "steep learning curve" issues it's having now.
-While Rust won't be going away, it won't be super popular either.
+start gaining some traction. The fact that they're easier than Rust, less error-prone
+than C/C++, and closer to how many devs already think will help them grow faster
+than Rust is growing.
+
+At the same time, Rust will be starting to get some well-developed libraries.
+At this point, the Rust ecosystem will be "mature" enough for companies to start
+investigating it. However, it is also at this point that it will begin to struggle
+a lot more in growth and acceptance with the "steep learning curve" issues. Companies
+don't want to pay lots of money to retrain developers, so their adoption will be
+slow, if it happens at all. Also, by the 4-5 year marks, enough additional complexity
+will be added to the Rust that the learning curve issue will be magnified.
+While Rust won't be going away, it won't be very popular either.
 
 If server costs are still rising, even if infrequently, then we will see almost no
 growth in "microservices" and an increasing movement into "efficient development."
 Efficient development will involve both moving away from microservices and
-prioritizing leaner code. Leaner code will mostly focus on libraries, at least at
-this stage.
+prioritizing leaner code. Leaner code will mostly focus on libraries and frameworks.
+There will be some movements that are about optimizing code for existing languages,
+and smaller movements for using systems languages for traditionally non-systems tasks.
+There will also be movements for "off the cloud" and "you don't need the cloud."
 
-There would be some companies experimenting with rewrites in systems languages.
-Many of the talks given by these companies would focus on Rust alternatives,
+Ssome companies will be experimenting with rewrites of their code into systems
+languages. Many of the talks given by these companies would focus on Rust alternatives,
 such as Zig, Jai, Carbon, or C++2. C++ would also start appearing in web conferences
-again, but exclusively in its modern form or in one of the C++ compatible languages.
-Rust would still be around and still be talked about, but by this point it won't be
-the hot new thing on the block. Also, its many warts and complexities would really
-be manifesting itself and would be slowing down large-scale adoption.
-In another 3-5 years of increasing server costs most companies that still exist
-on the cloud would start investing in rewrites to a faster language.
+again, but exclusively in its modern form. Rust would still be around and still be talked
+about, but by this point it won't be the hot new thing on the block. Also, its many
+warts and complexities would really be manifesting itself and would be slowing down
+large-scale adoption.
 
-If services were still rising prices, then "one-time pay" products would be
-booming. Users would start preferring to pay to own a copy of a movie or software
-product instead of paying to use something. There will be a shift as well away from
-"always online" as simply bundling online services for one-time pay products wouldn't
-be cost-effective. Monthly fees would just be too much, and the "Software as a
-Service" business model would get a bad reputation. Some more services, including
-paid ones, wil start dying out. Of course, after the economy stabilizes for a few
-years, SaaS would come back, but just with a different name.
+If services are still rising prices, then "one-time pay" products would be booming.
+Users would start preferring to pay to own a copy of a movie or software product instead
+of paying to "borrow" or "use". There will be a shift as well away from "always online"
+as simply bundling online services for one-time pay products wouldn't be cost-effective.
+Monthly fees would just be too much, and the "Software as a Service" business model would
+get a bad reputation. Some more services, including paid ones, will start dying out. Of
+course, after the economy stabilizes for a few years, SaaS would come back, but just
+with a different name. SaaS isn't going to truly die, just have dips in popularity, just
+like "pay to own" hasn't died (for proof, go look at Walmart's $5 DVD/Blu-Ray bins), it's
+just less popular.
 
 By this time, if a multi-year recession had taken place, then there would be a lot
 of internet users with older, slower, machines. A large gap in technological power
 would emerge, with the elite few having newer, faster machines and everyone else
-having much older hardware. Client rendered applications and Single-Page
+having much older hardware. This means that software which appeals to wide audiences
+would have to support slow hardware. Client rendered applications and Single-Page
 Applications would be on the way out, and WASM would have to turn to somewhere
 off the web to really get going.
 
-On the flip side, if either the economic situation
-stabilized, or if there was a quick recovery, then WASM would just be starting to
-shine as the future of client-rendered content. By now, enough languages and
-frameworks would be developed and refined to give it a fair shake. Microsoft's
-Blazor framework (or future successor) would be leading the charge, at least
-initially. Google would have their own WASM framework to catch up, and they may
-try to merge it with Android application development. If WASM is being used heavily
-for native applications, Apple would be working on their own framework to keep devs
-using Macs and XCode for development, though they may not have it released by now.
+On the flip side, if either there wasn't a prolonged economic crash, then WASM would just
+be starting to shine as the future of client-rendered content. By this mark, enough
+programming languages and frameworks would be developed and refined to give WASM a fair
+shake. Microsoft's Blazor framework (or future successor) would be leading the charge,
+at least initially. Google would have their own WASM framework to catch up, and they
+may try to merge it with Android application development. If WASM frameworks being
+to be used for native applications, Apple would be working on their own framework to
+keep devs using Macs and XCode for iOS development, though they may not have it released
+by now.
 
-Additionally, if SaaS prices stabilized, then it would be staying around for a long
-time. Probably at least another decade. Stabilization could happen by: leaving the
-cloud, removing microservice architectures from products, using more efficient
+Additionally, if SaaS prices stabilized by now, then SaaS would be staying around for
+a long time. Probably at least another decade. Stabilization could happen by: leaving
+the cloud, removing microservice architectures from products, using more efficient
 languages, and/or a restoration in supply chain costs and energy prices. Also, if
 SaaS and server prices stabilized, then hybrid and remote work would start growing
 more quickly. There would also be a larger exodus of highly-paid engineers leaving
@@ -189,7 +200,7 @@ lifetime of the products being made.
 
 ## 6+ Years
 
-"Made in India" not "Made in China" will be the new normal for most items. Some
+"Made in India" not "Made in China" will become the new normal for most items. Some
 higher quality or national security related items will be made in the Americas,
 either the U.S. or Mexico. China will still have some manufacturing, but it will
 be transitioning to a post-manufacturing economy.
@@ -202,54 +213,57 @@ presence. If server costs were still rising, there would be a rise in more tradi
 communications, such as calling, texting, talking in person, etc. Hybrid or remote
 work would really start dwindling after 5 years of increasing server costs.
 
-That said, if server costs had stabilized before now then remote work would really
-start taking off. There would also be startups dedicated to bringing remote work
-and remote training to traditional trade jobs, such as carpentry, plumbing, and
-electrical. These start-ups will be trying to address the shortage in trade jobs
-by increasing the effective working area of trades workers. How successful these
-companies will be is another matter.
+That said, if server costs had stabilized before, then there would also be startups
+dedicated to bringing remote work and remote training to traditional trade jobs, such
+as carpentry, plumbing, and electrical. These start-ups will be trying to address the
+shortage in trade jobs by increasing the effective working area of those working in the
+trades. How successful these companies will be is another matter.
 
-Regardless of whether the server costs have been rising for 2 or 5 years, there
-would be some interesting trends emerge in the technology space.
+Regardless of economics, there are a few predictions for the 6+ year mark.
 
-Newer languages that combined both efficiency and ease of development would start
-to emerge by this time. These would be compiled languages that either used efficient
+Newer programming languages that combine both efficiency and ease of development would
+emerge by this time. Most of these languages would have started development during
+inflation and economic difficulties, so they would be based around the idea of surviving
+tough economics. Many would be compiled languages that either used efficient
 reference counting memory management, ownership, manual memory, or some new
-technique. They would just be coming onto the scene, so it would take a while
-before there was significant adoption. However, many of their ideas would also
-start being incorporated into existing systems level languages to make those
-languages easier to use. These languages would offer "ease of development",
-"increased developer productivity", and "low to no cost for running" as the main
-selling points. The pitch would be to save on both the human time and skill costs
-as well as the server and infrastructure costs. Most of these new languages would
-prioritize static linking and easy deployments.
+technique. Most of these new languages would prioritize static linking and easy
+deployments, and some will focus on cross-compilation as well. They would just be
+coming onto the scene at around 6 years, so it would take a while before there was
+significant adoption. However, many of their ideas would also start being incorporated
+into existing systems level languages to make those languages easier to use. The new
+languages would offer "ease of development", "increased developer productivity", and
+"low to no cost for running" as the main selling points. The pitch would be to save
+on both the human labor/skill costs and the hardware costs for products. The main factor
+to how many of these languages start emerging would be how long the economic downturn
+lasted.
 
-Some newer languages would also really start thinking about how to train developers
-on their language. There will be increased experimentation on how to make learning
-quicker and more efficient for newer devs. Some languages will start splitting
-developers into "application builders" and "library builders", with each one getting
-content tailored to them. Some langauges will start focusing on interactive tutorials
-instead of long-form content pages. Others will start focusing on some more intense
-projects. A few will experiment with "language translations" where it shows examples
-from languages devs are familiar with, and then the equivalent (generally shorter)
-code in the new language. Some one else will come up with an idea not on this list.
+Some language developers and committees would also start thinking about how to train
+developers on their language. There will be increased experimentation on how to make
+learning programming languages quicker and enjoyable for devs. Some languages will
+start splitting developers into "application builders" and "library builders", with
+each one getting content tailored to them. Some languages will start focusing on
+interactive tutorials instead of long-form content pages. Others will start focusing
+on some more involved tutorial projects that are based on "real-world" projects. A
+few will experiment with "language translations" where it shows examples from
+languages devs are familiar with, and then the equivalent (generally shorter) code
+in the new language. Some will come up with an idea not on this list.
 
 More unikernel and microkernel projects would also be emerging by now. These
-projects would again be retargetted to lowering server costs. Some of them may
+projects would again be retargeted to lowering server costs. Some of them may
 also be trying to make the development process easier, but that is not the primary
 focus. Consequently, they will remain more niche, though there will be slightly
 more adoption than there is now.
 
 It would be in this time period that VR and AR technologies would start to get
-refined enough to be cool. However, premature marketing will have soured the
-public's appetite for a while. At around the 8-10 year mark is when we'll see
-AR/VR refined enough and remarketed enough that it starts to capture the public's
-attention. Some new, very refined, device will most likely be what launches VR and
-AR in the public mind.
+refined enough to grow in user base. However, premature marketing will have soured
+the public's appetite for a while. At around the 8-10 year mark is when we'll see
+it going mainstream, once enough time has passed for AR/VR innovations to come
+together as a "new" product. To go along with this, a new, very refined, device will
+most likely be what launches VR and AR into mainstream.
 
-Also, by now technology in schools will really be becoming part of the curriculum.
-Robotics, programming, etc. will be taught at least in the high school level at the
-vast majority of school districts.
+Also, by now technology courses in schools will be part of the curriculum.
+Robotics, programming, etc. will be taught at least in the high school level in the
+majority of school districts.
 
 ## Conclusion
 
