@@ -206,7 +206,7 @@ communications, such as calling, texting, talking in person, etc. Hybrid or remo
 work would really start dwindling after 5 years of increasing server costs.
 
 That said, if server costs had stabilized before this point, then there would also be startups
-dedicated to bringing remote work and remote training to non-technical jobs, such as traditional trade jobs, such
+dedicated to bringing remote work and remote training to non-tech and non-office jobs, such as traditional trade jobs, such
 as carpentry, plumbing, and electrical. These start-ups will be trying to address the
 shortage in trade jobs by increasing the effective working area of those working in the
 trades. How successful these companies will be is another matter.
