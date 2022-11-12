@@ -200,11 +200,6 @@ lifetime of the products being made.
 
 ## 6+ Years
 
-"Made in India" not "Made in China" will become the new normal for most items. Some
-higher quality or national security related items will be made in the Americas,
-either the U.S. or Mexico. China will still have some manufacturing, but it will
-be transitioning to a post-manufacturing economy.
-
 If cloud or server costs are still rising, then most companies will be fleeing the
 cloud quickly if they have not already fled. Also, microservices would pretty much
 be dead and efficient runtime would be lauded over quick development time. However,
@@ -220,6 +215,11 @@ shortage in trade jobs by increasing the effective working area of those working
 trades. How successful these companies will be is another matter.
 
 Regardless of economics, there are a few predictions for the 6+ year mark.
+
+"Made in India" not "Made in China" will become the new normal for many items. Some
+higher quality or national security related items will be made in the Americas,
+either the U.S. or Mexico. China will still have some manufacturing, but it will
+be transitioning to a post-manufacturing economy.
 
 Newer programming languages that combine both efficiency and ease of development would
 emerge by this time. Most of these languages would have started development during
