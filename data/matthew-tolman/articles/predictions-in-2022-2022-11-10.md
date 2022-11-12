@@ -46,9 +46,9 @@ investing heavier in alternative factory locations. India would be the next
 prime target for cheap labor and the U.S. would be good for stability in case
 of major, global occurrences (such as an escalation in a global conflict).
 
-We will start seeing more resurgence in movie theaters and film releases.
-Box-office numbers will start to return and there will be more hype around
-releasing in theaters rather than just on a platform. While some companies
+We will start seeing a resurgence in movie theaters and film releases.
+Box-office numbers will start to return to normal and there will be more hype around
+releasing in theaters rather than just on a streaming platform. While some companies
 with large platforms (like Disney) will still try the "dual release" or
 "online only" release, other studios with smaller platforms will really
 start taking to the theaters.
@@ -135,7 +135,7 @@ investigating it. However, it is also at this point that it will begin to strugg
 a lot more in growth and acceptance with the "steep learning curve" issues. Companies
 don't want to pay lots of money to retrain developers, so their adoption will be
 slow, if it happens at all. Also, by the 4-5 year marks, enough additional complexity
-will be added to the Rust that the learning curve issue will be magnified.
+will be added to Rust that the learning curve issue will be magnified.
 While Rust won't be going away, it won't be very popular either.
 
 If server costs are still rising, even if infrequently, then we will see almost no
@@ -146,15 +146,13 @@ There will be some movements that are about optimizing code for existing languag
 and smaller movements for using systems languages for traditionally non-systems tasks.
 There will also be movements for "off the cloud" and "you don't need the cloud."
 
-Ssome companies will be experimenting with rewrites of their code into systems
+Some companies will be experimenting with rewrites of their code into systems
 languages. Many of the talks given by these companies would focus on Rust alternatives,
 such as Zig, Jai, Carbon, or C++2. C++ would also start appearing in web conferences
 again, but exclusively in its modern form. Rust would still be around and still be talked
-about, but by this point it won't be the hot new thing on the block. Also, its many
-warts and complexities would really be manifesting itself and would be slowing down
-large-scale adoption.
+about, but by this point it won't be the hot new thing on the block.
 
-If services are still rising prices, then "one-time pay" products would be booming.
+If services are still raising prices, then "one-time pay" products would be booming.
 Users would start preferring to pay to own a copy of a movie or software product instead
 of paying to "borrow" or "use". There will be a shift as well away from "always online"
 as simply bundling online services for one-time pay products wouldn't be cost-effective.
@@ -162,8 +160,7 @@ Monthly fees would just be too much, and the "Software as a Service" business mo
 get a bad reputation. Some more services, including paid ones, will start dying out. Of
 course, after the economy stabilizes for a few years, SaaS would come back, but just
 with a different name. SaaS isn't going to truly die, just have dips in popularity, just
-like "pay to own" hasn't died (for proof, go look at Walmart's $5 DVD/Blu-Ray bins), it's
-just less popular.
+like "pay to own" hasn't died (for proof, go look at Walmart's $5 DVD/Blu-Ray bins).
 
 By this time, if a multi-year recession had taken place, then there would be a lot
 of internet users with older, slower, machines. A large gap in technological power
@@ -173,8 +170,8 @@ would have to support slow hardware. Client rendered applications and Single-Pag
 Applications would be on the way out, and WASM would have to turn to somewhere
 off the web to really get going.
 
-On the flip side, if either there wasn't a prolonged economic crash, then WASM would just
-be starting to shine as the future of client-rendered content. By this mark, enough
+On the flip side, if there wasn't a prolonged economic crash, then WASM would just
+be starting to shine as the future of client-rendered content. By this point, enough
 programming languages and frameworks would be developed and refined to give WASM a fair
 shake. Microsoft's Blazor framework (or future successor) would be leading the charge,
 at least initially. Google would have their own WASM framework to catch up, and they
@@ -203,13 +200,13 @@ lifetime of the products being made.
 If cloud or server costs are still rising, then most companies will be fleeing the
 cloud quickly if they have not already fled. Also, microservices would pretty much
 be dead and efficient runtime would be lauded over quick development time. However,
-at this length of time most companies would be struggling to make and keep an online
+after such a long time, most companies would be struggling to make and keep an online
 presence. If server costs were still rising, there would be a rise in more traditional
 communications, such as calling, texting, talking in person, etc. Hybrid or remote
 work would really start dwindling after 5 years of increasing server costs.
 
-That said, if server costs had stabilized before, then there would also be startups
-dedicated to bringing remote work and remote training to traditional trade jobs, such
+That said, if server costs had stabilized before this point, then there would also be startups
+dedicated to bringing remote work and remote training to non-technical jobs, such as traditional trade jobs, such
 as carpentry, plumbing, and electrical. These start-ups will be trying to address the
 shortage in trade jobs by increasing the effective working area of those working in the
 trades. How successful these companies will be is another matter.
