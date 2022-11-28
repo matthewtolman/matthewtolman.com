@@ -13,6 +13,16 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <article published="Yes"
+                 title="Separating SQL from code with files: Initial thoughts"
+                 id="article:separate-sql-from-code-with-files-initial-thoughts"
+                 author="auth:mtolman" time="2022-11-28T00:00:00-0700"
+                 file="separate-sql-from-code-with-files-initial-thoughts.md">
+            <description>
+                Some initial thoughts after experimenting with separating SQL from code using SQL files.
+                Comparing it against inline SQL as well as views and stored procedures.
+            </description>
+        </article>
+        <article published="Yes"
                  title="Predictions in Tech: Looking Forward from 2022"
                  id="article:predictions-tech-2022"
                  author="auth:mtolman" time="2022-11-11T00:00:00-0700"
