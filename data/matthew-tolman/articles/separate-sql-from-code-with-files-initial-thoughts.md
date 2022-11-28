@@ -6,7 +6,7 @@ Maven), tried new control flow mechanisms, new error handling techniques, etc. I
 more of a playground for new ideas than a true product.
 
 One of the new ideas I've been trying deals with managing SQL queries. A lot of
-applications and frameworks I've used rely on Object Relational Mappers (ORMs)
+applications and frameworks I've worked with rely on Object Relational Mappers (ORMs)
 to manage the interface between code and the database, which is sort of okay, but it has
 always felt weird to me, especially once you get multiple data types involved in the same
 request. Which is why I'm experimenting, to see if there's a more natural or flexible
