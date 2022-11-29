@@ -51,8 +51,8 @@ class UserController {
 
     @RequestMapping("/new")
     @ResponseBody
-    fun createUser(params: NewUserReqest /* definition not shown for brevity */) {
-        NewUserValidator(params).assertIsValid() /* definition not shown for brevity */
+    fun createUser(params: NewUserReqest /* class definition not shown for brevity */) {
+        NewUserValidator(params).assertIsValid() /* class & method definition not shown for brevity */
         val id = userRepository.create(User(params.email, PasswordHasher.hash(params.password))
         // User is in the DB but not settings
         // A crash here could be bad
@@ -128,8 +128,8 @@ As a reminder, here is our user create code:
 ```kotlin
 @RequestMapping("/new")
 @ResponseBody
-fun createUser(body: User /* definition not shown for brevity */) {
-    NewUserValidator(body).assertIsValid() /* definition not shown for brevity */
+fun createUser(body: User /* class definition not shown for brevity */) {
+    NewUserValidator(body).assertIsValid() /* class & method definition not shown for brevity */
     val id = userRepository.create(User(body.email, PasswordHasher.hash(body.password))
     userSettingsRepository.create(UserSettings(id, "light", "Consolas"))
 }
@@ -174,7 +174,7 @@ class UserController {
     @RequestMapping("/new")
     @ResponseBody
     fun createUser(body: Map<String, *>, @Autowired dbConn: Connection) {
-        NewUserValidator(body).assertIsValid() /* definition not shown for brevity */
+        NewUserValidator(body).assertIsValid() /* class & method definition not shown for brevity */
         val pdo = dbConn.prepareStatement("EXEC newUser @email =?, @password = ?, @theme = ?, @font = ?")
         pdo.setString(1, body["email"] as String)
         pdo.setString(2, PasswordHasher.hash(body["password"] as String))
@@ -284,7 +284,7 @@ class UserController {
     @RequestMapping("/new")
     @ResponseBody
     fun createUser(body: Map<String, *>) {
-        NewUserValidator(body).assertIsValid() /* definition not shown for brevity */
+        NewUserValidator(body).assertIsValid() /* class & method definition not shown for brevity */
         val pdo = sqlLoader.loadFile("createUser.sql")
         pdo.setString(1, body["email"] as String)
         pdo.setString(2, PasswordHasher.hash(body["password"] as String))
@@ -393,7 +393,7 @@ class UserController {
     @RequestMapping("/new")
     @ResponseBody
     fun createUser(body: Map<String, *>) {
-        NewUserValidator(body).assertIsValid() /* definition not shown for brevity */
+        NewUserValidator(body).assertIsValid() /* class & method definition not shown for brevity */
         sql.execute(SqlQueries.NEW_USER, mapOf(
             "email" to body["email"],
             "password" to PasswordHasher.hash(body["password"] as String),
