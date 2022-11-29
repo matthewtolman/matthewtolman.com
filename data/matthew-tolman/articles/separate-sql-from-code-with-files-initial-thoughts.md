@@ -230,9 +230,6 @@ additional migrations since they add a lot of friction to the development pipeli
 especially in early stages of development when SELECTs and JOINs are in flux as teams
 try to figure out what data is needed to accomplish the (changing) feature requests.
 
-Still, teams that already have a database migration system will find this system pretty
-straightforward to implement.
-
 Though one thing I did notice is that the system quickly broke down for a lot of teams
 who were annoyed with having to write a new DB migration to just change a query. Often,
 when the system broke what devs were doing was turning SQL into a key/value document
@@ -245,10 +242,13 @@ query changes in code was much lower than changing queries in the database and b
 was enough continuous flux to make the friction of query changes very painful.
 
 While not every organization which does implement this method will encounter these
-issues, it is important to look out for shortcuts like this and to understand *why*
-they are happening. It's not because the developers are bad at their job, it's because
+issues, it is important to look out for shortcuts like this and to understand *why* they
+are happening. It's not because the developers are bad at their job, it's because
 the system they are in was set up to encourage the "bad practices" (high friction
 combined with frequent exposure to that friction).
+
+Still, teams that already have a database migration system will find this system pretty
+straightforward to implement.
 
 ## SQL as files
 
@@ -301,7 +301,7 @@ class App {}
 fun main(args: Array<String>) = SpringApplication.run(App::class, args)
 
 // src/resources/createUser.sql
--- Note: could use variables to make it easier to know what's being substituted
+-- Note: could use variables to make it easier to know what is being substituted
 DECLARE @ID int;
 INSERT INTO users (email, password) VALUES (?, ?);
 SELECT @ID = scope_identity();
@@ -388,7 +388,7 @@ class Sql {
 @Controller
 @RequestMapping("/users")
 class UserController {
-    @Autowired sql: Sql /* Reworked class to also execute queries */
+    @Autowired sql: Sql
 
     @RequestMapping("/new")
     @ResponseBody
@@ -417,16 +417,16 @@ INSERT INTO user_settings (user_id, font, theme)
 ```
 
 Again, it's not perfect. There's still potential for SQL parameters to not get set
-properly, but it's a lot closer than before, and it does shield a lot of the code from
+properly, but it's a better (and more readable) than before, and it does shield a lot of the code from
 changes. For instance, if we did change the order of our parameters, we'd only have to
-adjust the query list, the rest of the code would stay the same. Likewise, if we removed
+adjust the query list in the enum and the rest of the code would stay the same. Likewise, if we removed
 a parameter, we wouldn't have to change code since it would just ignore the extra keys in
-the map.
+the map. Or if we renamed a file, we'd only have to update the enum and not the entire codebase.
 
 Of course, there is the question of "why not use named parameters"? The answer is that
 named parameters don't exist in vanilla JDBC. I'd have to pull in a library for that.
 Right now, I'm trying to keep the ideas and libraries I'm playing with limited since I'm
-already pushing it for an experiment project, which is why I went with vanilla JDBC.
+already pushing it for an experiment project, which is why I stayed with vanilla JDBC.
 
 That said, not all languages and libraries are limited to that. If we were in Node and
 had a library with named parameters, we could do something like the following:
