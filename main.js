@@ -10,16 +10,6 @@ const getDirectories = async source =>
 
 async function main() {
     const MathJax = await require('mathjax').init({
-        options: {
-            enableAssistiveMml: true,
-            enableEnrichment: true,   // false to disable enrichment
-            sre: {
-                speech: 'shallow',         // or 'shallow', or 'deep'
-                domain: 'mathspeak',    // speech rules domain
-                style: 'default',       // speech rules style
-                locale: 'en'            // the language to use (en, fr, es, de, it)
-            }
-        },
         loader: {
             // paths: {mathjax: 'mathjax-full/es5'},
             // source: require('mathjax-full/components/src/source').source,
