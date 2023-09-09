@@ -129,7 +129,7 @@ function generateTableCode(head, body) {
 
   res += "<thead><tr>"
   for (const headCell of head) {
-    res += "<th>" + headCell.replaceAll("\\n", "<br/>") + "</th>";
+    res += "<th>" + headCell.replace(/\\n/g, "<br/>") + "</th>";
   }
   res += "</tr></thead>"
 

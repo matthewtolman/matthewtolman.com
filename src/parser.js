@@ -448,11 +448,10 @@ function parseTableCells(line) {
   const res = []
   let match
   while ((match = cellRegex.exec(line)) !== null) {
-    console.info(match, match.groups.content)
     res.push(
         match.groups.content
-          .replaceAll("\\|", "|")
-          .replaceAll("\\\\", "\\")
+          .replace(/\\\|/g, "|")
+          .replaceAll(/\\\\/g, "\\")
           .trim()
     )
   }
