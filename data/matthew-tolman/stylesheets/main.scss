@@ -98,11 +98,60 @@ img {
   margin-top: 0.5em;
 }
 
+.math-initial, .hide {
+  display: none;
+}
+
 @include link-styles($blue);
 
 //////////////////////////
 // Component Styling
 //////////////////////////
+
+blockquote {
+  border-left: solid 10px rgba(0.2, 0.2, 0.2, 0.15);
+  padding-left: 1.5em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  & p:first-child {
+    padding-top: 0;
+    margin-top: 0;
+  }
+  & p:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+}
+
+.math-block {
+  display: flex;
+  justify-content: center;
+}
+
+$table-border-color: rgba(0.2, 0.2, 0.2, 0.2);
+$table-border-div-color: rgba(0.2, 0.2, 0.2, 0.4);
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  & th {
+    padding: 0.5em 0.25em;
+  }
+  & td {
+    padding: 0.3em 0.15em;
+  }
+  & thead tr {
+    &, & th {
+      border: 1px solid $table-border-color;
+      border-bottom: 2px solid $table-border-div-color;
+      text-align: center;
+    }
+  }
+  & tbody td {
+    text-align: center;
+    border: 1px solid $table-border-color;
+  }
+}
 
 ul.results {
   list-style: none;
@@ -240,6 +289,14 @@ article {
 //////////////////////////
 // Highlight JS
 //////////////////////////
+
+pre code.hljs {
+  display: block;
+}
+
+code.hljs {
+  display: inline;
+}
 
 @mixin hljs-theme() {
   pre code.hljs {

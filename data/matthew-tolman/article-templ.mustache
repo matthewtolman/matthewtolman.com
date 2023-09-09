@@ -18,6 +18,8 @@
         <link rel="icon" href="{{favicon_svg}}" type="image/svg+xml">
         <link rel="apple-touch-icon" href="{{favicon_apple_icon}}">
 
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
         {{{global_assets}}}
         {{{article_head_assets}}}
     </head>
@@ -44,6 +46,7 @@
             </footer>
         </div>
         {{{article_body_assets}}}
+    <script id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
         window.addEventListener('scroll', function() {
             if (document.scrollingElement.scrollTop > 300) {
@@ -53,6 +56,15 @@
                 document.querySelector('.to-top-real').classList.remove('show')
             }
         })
+        MathJax.typesetPromise().then(() => {
+          for(const elem of document.querySelectorAll('.math-fallback')) {
+            elem.style['display'] = 'none'
+            console.info(elem)
+          }
+          for(const elem of document.querySelectorAll('.math-initial')) {
+            elem.classList.remove('math-initial')
+          }
+        }).catch((err) => console.error(err.message));
     </script>
     </body>
 </html>

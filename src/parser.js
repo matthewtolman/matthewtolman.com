@@ -246,7 +246,7 @@ function parse(str) {
   };
 
   const tokenRegex =
-    /(?<bold_italic>\*\*\*[\w \t\.,\(\)]+\*\*\*)|(?<bold>\*\*[\w \t\.,\(\)]+\*\*)|(?<italic>\*[\w \t\.,\(\)]+\*)|(?<list>^[^\S\r\n]*(?<list_char>[\*\-$])\s(?<list_text>.*))|((?<header_level>#{1,6})(?<header>.*))|(?<obj_link>\[\[[\w:\-]+]])|(?<link>\((?<link_text>[\w\s]+)\)\[(?<link_ref>[\w\:\/\.\#\&\?\=%\-]+)\])|(?<ref>\^\[[\w-]+\])|(?<references>@References\n(\s*(?:\*\s*(?:[\w\-]+)(\s*\|\s*(?:[\w\-]+):\s*(?:[^\n]+))*))*)|~(?<elem>(?<elem_tag>\w+)(?<attrs>(::[\w-]+=(:?[^:])*?)+?)(::(?<content>.+?::~\/\w+))?:;)|(?<code_block>```(?:\w+)\n(?:(.|\n)*?)```)|(?<emphasis>`.*`)|(?<toc>\[toc\])|(?<p_break>\n\n+)|(?<blockquote>(^>+.*\n)+)|(?<escaped>\\.)|[\w\s\."',]+?|./gm;
+    /(?<bold_italic>\*\*\*[\w \t\.,\(\)]+\*\*\*)|(?<bold>\*\*[\w \t\.,\(\)]+\*\*)|(?<italic>\*[\w \t\.,\(\)]+\*)|(?<list>^[^\S\r\n]*(?<list_char>[\*\-$])\s(?<list_text>.*))|((?<header_level>#{1,6})(?<header>.*))|(?<obj_link>\[\[[\w:\-]+]])|(?<link>\((?<link_text>[\w\s]+)\)\[(?<link_ref>[\w\:\/\.\#\&\?\=%\-]+)\])|(?<ref>\^\[[\w-]+\])|(?<references>@References\n(\s*(?:\*\s*(?:[\w\-]+)(\s*\|\s*(?:[\w\-]+):\s*(?:[^\n]+))*))*)|~(?<elem>(?<elem_tag>\w+)(?<attrs>(::[\w-]+=(:?[^:])*?)+?)(::(?<content>.+?::~\/\w+))?:;)|(?<code_block>```(?:\w+)\n(?:(.|\n)*?)```)|(?<inline_code>`(?<inline_lang>\<\w+\>)?.*?`)|(?<toc>\[toc\])|(?<p_break>\n\n+)|(?<blockquote>(^>+.*\n)+)|(?<math>\$\$\n(?<math_equat>(\n|.)*?)\n\$\$)|(?<math_inline>\\\((?<math_equat_inline>.*?)\\\))|(?<table>(?<thead>(?:\|(?:[^|\\\n]|\\\||\\\\|\\n)*)+\|)\n(?<tdiv>(?:\|\-\-\-+)+\|)\n(?<trows>(?:(?:\|(?:[^|\\\n]|\\\||\\\\|\\n)*)+\|\n)+))|(?<escaped>\\.)|[\w\s\."',]+?|./gm;
 
   let match;
   while ((match = tokenRegex.exec(str)) !== null) {
@@ -256,10 +256,11 @@ function parse(str) {
     } else if (match.groups.references) {
       result.references = { ...result.references, ...parseReferences(match[0]) };
     } else if (match.groups.blockquote) {
-      let subquote = match[0].replace(/^>/gm, '');
+      const subquote = match[0].replace(/^>(?: *)/gm, '');
+      const data = inflateTree(parse(subquote).tokens)
       result.tokens.push({
         type: ArticleTokenType.BLOCK_QUOTE,
-        data: parse(subquote).tokens,
+        data,
       });
     } else if (match.groups.bold_italic) {
       result.tokens.push({
@@ -325,10 +326,13 @@ function parse(str) {
       });
     } else if (match.groups.escaped) {
       result.tokens.push(match[0].slice(1));
-    } else if (match.groups.emphasis) {
+    } else if (match.groups.inline_code) {
       result.tokens.push({
-        type: ArticleTokenType.EMPHASIS,
+        type: ArticleTokenType.INLINE_CODE,
         data: [match[0].slice(1, -1)],
+        attrs: {
+          lang: match.groups.inline_lang || 'text'
+        }
       });
     } else if (match.groups.elem) {
       const pieces = (match.groups.attrs || '').split('::');
@@ -340,9 +344,28 @@ function parse(str) {
           .map((s) => [s.slice(0, s.indexOf('=')), s.slice(s.indexOf('=') + 1)])
           .reduce((a, c) => ({ ...a, [c[0]]: c[1] }), { tag: match.groups.elem_tag }),
       });
-    } else if (match.groups.code_block) {
+    }
+    else if (match.groups.code_block) {
       result.tokens.push(parseCodeBlock(match[0]));
-    } else {
+    }
+    else if (match.groups.math_inline) {
+      result.tokens.push({
+        type: ArticleTokenType.MATH,
+        data: [],
+        attrs: {equation: match.groups.math_equat_inline, inline: true}
+      });
+    }
+    else if (match.groups.math) {
+      result.tokens.push({
+        type: ArticleTokenType.MATH,
+        data: [],
+        attrs: {equation: match.groups.math_equat, inline: false}
+      });
+    }
+    else if (match.groups.table) {
+      result.tokens.push(parseTable(match.groups.thead, match.groups.trows))
+    }
+    else {
       const empty = result.tokens.length == 0;
       const last = !empty ? result.tokens[result.tokens.length - 1] : null;
       if (last && typeof last === 'string') {
@@ -420,6 +443,33 @@ function parseReferences(str) {
   return res;
 }
 
+function parseTableCells(line) {
+  const cellRegex = /\|(?<content>(?:[^\\\|]|\\.)+)/gm
+  const res = []
+  let match
+  while ((match = cellRegex.exec(line)) !== null) {
+    res.push(
+        match.groups.content
+          .replaceAll("\\|", "|")
+          .replaceAll("\\\\", "\\")
+          .trim()
+    )
+  }
+  return res
+}
+
+function parseTable(tableHead, tableRows) {
+  const headCells = parseTableCells(tableHead)
+  const rowCells = tableRows.split('\n')
+      .filter(r => r)
+      .map(parseTableCells)
+  return {
+    type: ArticleTokenType.TABLE,
+    data: [],
+    attrs: {head: headCells, body: rowCells}
+  }
+}
+
 function inflateTree(tokens) {
   const newTokens = [];
   let currentParagraph = {
@@ -462,7 +512,6 @@ function inflateTree(tokens) {
     } else {
       switch (token.type) {
         case ArticleTokenType.HEADER:
-        case ArticleTokenType.BLOCK_QUOTE:
         case ArticleTokenType.TABLE_OF_CONTENTS:
         case ArticleTokenType.PARAGRAPH_BREAK:
         case ArticleTokenType.CODE_BLOCK:
@@ -470,6 +519,9 @@ function inflateTree(tokens) {
         case ArticleTokenType.PARAGRAPH:
         case ArticleTokenType.LIST:
           addTokenAndParagraph(token);
+          break;
+        case ArticleTokenType.BLOCK_QUOTE:
+          currentParagraph.data.push(token)
           break;
         default:
           addToken(token);

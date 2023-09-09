@@ -11,6 +11,17 @@ const { ArticleTokenType } = require('./types');
 const dateFormat = "yyyy-MM-dd'T'HH:mm:ssXX";
 const mkdirp = require('mkdirp');
 
+let mathJaxSvgContext = null
+let mathJaxCHtmlContext = null
+
+function setMathJaxSvgContext(context) {
+  mathJaxSvgContext = context
+}
+
+function setMathJaxCHtmlContext(context) {
+  mathJaxCHtmlContext = context
+}
+
 function generateBlogHtml(xmlFile, directory) {
   return parseBlog(xmlFile, directory)
     .then((blog) => [blog, []])
@@ -113,6 +124,37 @@ function headerId(header, blog, references = {}, sections = []) {
   return content.replace(/[^a-zA-Z0-9_]/g, '--').toLowerCase();
 }
 
+function generateTableCode(head, body) {
+  let res = '<table>'
+
+  res += "<thead><tr>"
+  for (const headCell of head) {
+    res += "<th>" + headCell.replaceAll("\\n", "<br/>") + "</th>";
+  }
+  res += "</tr></thead>"
+
+  res += "<tbody>"
+  for (const row of body) {
+    res += "<tr>"
+    for (const cell of row) {
+      res += `<td>${cell}</td>`
+    }
+    res += "</tr>"
+  }
+  res += "</tbody>"
+
+  res += '</table>'
+  return res
+}
+
+function generateInlineCode(lang, code) {
+  // We do an htmlDecode since the incoming content is htmlEncoded and hljs will do an additional htmlEncode
+  return `<span class="hljs language-${htmlEncode(lang)}">${
+      hljs.highlight(htmlDecode(code), { language: lang }).value
+  }</span>`;
+  // return
+}
+
 function generateCodeBlock(lang, code) {
   // We do an htmlDecode since the incoming content is htmlEncoded and hljs will do an additional htmlEncode
   return `<pre><code class="hljs language-${htmlEncode(lang)}">${
@@ -120,6 +162,8 @@ function generateCodeBlock(lang, code) {
   }</code></pre>`;
   // return
 }
+
+
 
 function contentToHtml(tokens, blog, references = {}, sections = []) {
   const res = [];
@@ -296,6 +340,28 @@ function contentToHtml(tokens, blog, references = {}, sections = []) {
           break;
         case ArticleTokenType.CODE_BLOCK:
           res.push(generateCodeBlock(token.attrs.lang, content()));
+          break;
+        case ArticleTokenType.INLINE_CODE:
+          res.push(generateInlineCode(token.attrs.lang || 'cpp', content()));
+          break;
+        case ArticleTokenType.MATH:
+          const text = token.attrs.inline ? `\\(${token.attrs.equation}\\)` : `$$${token.attrs.equation}$$`;
+          const textClass = mathJaxSvgContext ? 'math-initial' : '';
+          res.push(`<span class='${textClass}'>${text}</span>`);
+          if (mathJaxSvgContext) {
+            const htmlObj = mathJaxSvgContext.tex2svg(token.attrs.equation, {display: true})
+            let html = MathJax.startup.adaptor.outerHTML(htmlObj);
+            if (!token.attrs.inline) {
+              html = `<div class="math-block math-fallback">${html}</div>`
+            }
+            else {
+              html = `<span class="math-fallback">${html}</span></span>`
+            }
+            res.push(html)
+          }
+          break;
+        case ArticleTokenType.TABLE:
+          res.push(generateTableCode(token.attrs.head, token.attrs.body));
           break;
       }
     }
@@ -742,4 +808,5 @@ function articleToRss(blog) {
 
 module.exports = {
   generateBlogHtml,
+  setMathJaxSvgContext
 };

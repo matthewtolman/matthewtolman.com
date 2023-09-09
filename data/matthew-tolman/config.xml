@@ -13,6 +13,17 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <article published="Yes"
+                 title="Stateless Logic"
+                 id="article:separation-of-logic-from-data-storage"
+                 author="auth:mtolman" time="2023-09-09T00:00:00-0700"
+                 file="stateless-logic.md">
+            <description>
+                Coupling any form of shared state with business logic causes lots of issues, both for the maintainability
+                of the code and sometimes the performance of the code as well. In this article, we dive deep into what
+                problems state can cause, how to remove state from methods, and the benefits that can come from state.
+            </description>
+        </article>
+        <article published="Yes"
                  title="Separating SQL from code with files: Initial thoughts"
                  id="article:separate-sql-from-code-with-files-initial-thoughts"
                  author="auth:mtolman" time="2022-11-28T00:00:00-0700"
