@@ -451,7 +451,7 @@ function parseTableCells(line) {
     res.push(
         match.groups.content
           .replace(/\\\|/g, "|")
-          .replaceAll(/\\\\/g, "\\")
+          .replace(/\\\\/g, "\\")
           .trim()
     )
   }
