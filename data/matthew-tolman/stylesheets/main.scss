@@ -338,6 +338,27 @@ code.hljs {
   }
 }
 
+@mixin custom-dark-theme() {
+  blockquote {
+    border-left-color: rgba(0.8, 0.8, 0.8, 0.45);
+  }
+
+  $dark-table-border-color: rgba(0.8, 0.8, 0.8, 0.4);
+  $dark-table-border-div-color: rgba(0.8, 0.8, 0.8, 0.7);
+
+  table {
+    & thead tr {
+      &, & th {
+        border-color: $dark-table-border-color;
+        border-bottom-color: $dark-table-border-div-color;
+      }
+    }
+    & tbody td {
+      border-color: $dark-table-border-color;
+    }
+  }
+}
+
 @mixin hljs-dark-theme() {
   pre code.hljs {
     color: invert($color);
@@ -421,6 +442,7 @@ code.hljs {
 
 .dark-theme {
   @include hljs-dark-theme();
+  @include custom-dark-theme();
 }
 
 @media (prefers-color-scheme: dark) {
@@ -430,6 +452,7 @@ code.hljs {
   }
 
   @include hljs-dark-theme();
+  @include custom-dark-theme();
 
   .light-theme pre code.hljs {
     -webkit-filter: unset;

@@ -1058,7 +1058,7 @@ above, however I've only seen something like that once). However, there is a muc
 for performance degradation with stateful logic. This type of code happens quite regularly in systems with Dependency
 Injection (DI).
 
-Usually in DI systems, there are [repository objects](https://zetcode.com/springboot/repository/) which handle getting
+Usually in DI systems, there are repository objects^[repo-objs] which handle getting
 the state of some entity or a group of entities. Repository objects usually fetch the entities from a remote resource,
 such as a database or a microservice.
 
@@ -1380,3 +1380,11 @@ TypeScript/JavaScript, PHP, and Clojure. We've also highlighted some language fe
 techniques easier to implement, such as implementing custom iterators, generators, and lazy sequences. We also showed
 some language-agnostic tooling that can be implemented around stateless code, including time-travel debugging, testing
 interfaces, and mock-less tests.
+
+@References
+* repo-objs
+  | type: web
+  | page-title: Sprint Boot @Repository
+  | website-title: ZetCode
+  | link: https://zetcode.com/springboot/repository/
+  | date-accessed: 2022-09-08

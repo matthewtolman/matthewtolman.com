@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node main.js",
     "format": "prettier --write \"src/**/*.js\"",
-    "start": "bash prep-imgs.sh && npm run build && onchange 'data/**/*' 'src/*' -- npm run build"
+    "start": "bash prep-imgs.sh && npm run build && onchange 'data/**/*' 'src/**' -- npm run build"
   },
   "author": "",
   "license": "GPL-3.0",

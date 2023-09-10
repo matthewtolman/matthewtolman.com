@@ -13,6 +13,16 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <article published="Yes"
+                 title="Error Handling Across Programming Languages"
+                 id="article:error-handling-across-programming-languages"
+                 author="auth:mtolman" time="2023-09-10T00:00:00-0700"
+                 file="error-handling-across-programming-languages.md">
+            <description>
+                An overview of many different error handling paradigms in programming. Covers some of the advantages
+                and pitfalls of each method. More of an overview rather than a comparison or opinion post.
+            </description>
+        </article>
+        <article published="Yes"
                  title="Stateless Logic"
                  id="article:separation-of-logic-from-data-storage"
                  author="auth:mtolman" time="2023-09-09T00:00:00-0700"

@@ -1,0 +1,28 @@
+digraph g {
+    {
+        rank = same;
+        success[label="Success\nPath",shape=plaintext];
+        error[label="Error\nPath",shape=plaintext];
+    }
+
+    init[shape=box, label="Random Number"]
+    func1[shape=box, label="Assert not Even"];
+    func2[shape=box, label="Add 1"];
+    func3[shape=box, label="Multiply 2"];
+    err1[shape=box, label="Return 9998 if not 4"];
+    err2[shape=box, label="Return -1001"];
+
+    // connect the left most nodes and keep them one below the other
+    success -> init [ style = invis, weight = 10 ];
+
+    invis[style=invis]
+    // Connect the right most nodes
+    error -> invis -> err1 [ style = invis, weight = 10 ];
+    init -> func1 -> func2 -> func3 [label="  return", weight = 10];
+    err1 -> err2[label="  throw", weight = 10];
+
+    func1 -> err1 [label="  throw"];
+    err1 -> func2 [label="  return"];
+    err2 -> func3 [label="  return"];
+
+}

@@ -5,6 +5,8 @@ const { copy, writeFile } = require('fs-extra');
 const { htmlDecode, htmlEncode } = require('js-htmlencode');
 const { format } = require('date-fns');
 const hljs = require('highlight.js');
+hljs.registerLanguage('zig', require('./hljs_langs/zig'))
+hljs.registerLanguage('odin', require('./hljs_langs/odin'))
 const fs = require('fs');
 const { ArticleTokenType } = require('./types');
 
