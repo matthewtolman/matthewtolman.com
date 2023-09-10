@@ -247,7 +247,7 @@ inside a "using" statement. The using statement will then guarantee that the all
 a block of code, and it will properly deallocate or dispose of those resources once the program execution has left that
 block of code.
 
-> The term "using" comes from C#'s "using" keyword. However, there are many different keywords that this pattern appears
+> The term "using" comes from C\#'s "using" keyword. However, there are many different keywords that this pattern appears
 > with. I've seen "using", "use", and "try". 
 
 Below is an example:
