@@ -3,6 +3,8 @@ const xmlParse = require('fast-xml-parser').parse;
 const path = require('path');
 const sassRender = require('sass').render;
 const { ArticleTokenType } = require('./types');
+const uglifyJs = require('uglify-js')
+const cleanCss = require('clean-css')
 
 function parseBlog(fileName, blogId) {
   return readFile(fileName, 'UTF-8')
@@ -19,7 +21,7 @@ function parseBlog(fileName, blogId) {
         settingsTemplate: x.blog._attr['settings-template'] || 'settings-templ.mustache',
         fontsFolder: path.join(blogId, 'fonts'),
         baseUrl: x.blog._attr['base-url'],
-        assets: { stylesheets: [] },
+        assets: { stylesheets: [], scripts: [], copy: [] },
         blogTitle: x.blog._attr.title,
         outDir: path.join('out', blogId),
         articles: [],
@@ -39,49 +41,86 @@ function parseBlog(fileName, blogId) {
 }
 
 async function addAssets([xml, blog]) {
+  const cssMinifier = new cleanCss({
+    level: 2,
+    returnPromise: false
+  })
   const assetsArray = await Promise.all(
-    Object.entries(xml.blog.assets)
-      .map(([type, assets]) => [type, Array.isArray(assets) ? assets : [assets]])
-      .flatMap(([type, assets]) => {
-        switch (type) {
-          case 'stylesheet':
-            return Promise.all(
-              assets.map((a) => {
-                const toFile = (content) => ({
-                  fileName: type + '/' + path.parse(a._attr.src).name + '.css',
-                  content,
-                });
-                const fileName = path.join('data', blog.id, ...a._attr.src.split('/'));
-                switch (a._attr.type) {
-                  case 'sass':
-                  case 'scss':
-                    return new Promise((resolve, reject) =>
-                      sassRender(
-                        {
-                          file: fileName,
-                        },
-                        (err, res) => {
-                          if (err) {
-                            return reject(err);
-                          }
-                          resolve(res.css.toString('utf-8'));
-                        }
-                      )
-                    ).then(toFile);
-                  default:
-                    return readFile(fileName, { encoding: 'utf-8', flag: 'r' }).then(toFile);
-                }
-              })
-            ).then((stylesheets) => ['stylesheets', stylesheets]);
-            break;
-          default:
-            console.warn('Unsupported asset type ' + type);
-            return null;
-        }
-      })
-      .filter((t) => t)
+      Object.entries(xml.blog.assets)
+          .map(([type, assets]) => [type, Array.isArray(assets) ? assets : [assets]])
+          .flatMap(([type, assets]) => {
+            switch (type) {
+              case 'stylesheet':
+                return Promise.all(
+                    assets.map((a) => {
+                      const toFile = (content) => {
+                        return ({
+                          fileName: type + '/' + path.parse(a._attr.src).name + '.css',
+                          content: cssMinifier.minify(content).styles,
+                        })
+                      };
+                      const fileName = path.join('data', blog.id, ...a._attr.src.split('/'));
+                      switch (a._attr.type) {
+                        case 'sass':
+                        case 'scss':
+                          return new Promise((resolve, reject) =>
+                              sassRender(
+                                  {
+                                    file: fileName,
+                                  },
+                                  (err, res) => {
+                                    if (err) {
+                                      return reject(err);
+                                    }
+                                    resolve(res.css.toString('utf-8'));
+                                  }
+                              )
+                          ).then(toFile);
+                        default:
+                          return readFile(fileName, {encoding: 'utf-8', flag: 'r'}).then(toFile);
+                      }
+                    })
+                ).then((stylesheets) => ['stylesheets', stylesheets]);
+              case 'script':
+                return Promise.all(
+                    assets.map((a) => {
+                      const toFile = (content) => ({
+                        fileName: type + '/' + path.parse(a._attr.src).name + '.js',
+                        content: uglifyJs.minify(content).code,
+                      });
+                      const fileName = path.join('data', blog.id, ...a._attr.src.split('/'));
+
+                      switch (a._attr.type) {
+                        case 'js':
+                        default:
+                          return readFile(fileName, {encoding: 'utf-8', flag: 'r'}).then(toFile)
+
+                      }
+                    })
+                ).then((scripts) => ['scripts', scripts])
+              case 'copy':
+                return Promise.all(
+                    assets.map((a) => {
+                      const fileName = path.join('data', blog.id, ...a._attr.src.split('/'));
+                      const toFile = (content) => ({
+                        fileName: path.join(...a._attr.src.split('/')),
+                        path: fileName,
+                      });
+
+                      return toFile(a)
+                    })
+                ).then((files) => ['copy', files])
+              default:
+                console.warn('Unsupported asset type ' + type);
+                return null;
+            }
+          })
+          .filter((t) => t)
   );
-  blog.assets = assetsArray.reduce((a, c) => ({ ...a, [c[0]]: c[1] }), {});
+  blog.assets = assetsArray.reduce((a, c) => ({...a, [c[0]]: c[1]}), {});
+  blog.assets.stylesheets ||= []
+  blog.assets.scripts ||= []
+  blog.assets.copy ||= []
   return [xml, blog];
 }
 

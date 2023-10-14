@@ -901,6 +901,12 @@ occur.
   | date-accessed: 2022-09-09
 * rust-enum
   | type: web
+  | page-title: Defining an Enum
+  | website-title: The Rust Programming Language
+  | link: https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html
+  | date-accessed: 2022-09-09
+* cpp-expected
+  | type: web
   | page-title: std::expected
   | website-title: C++ Reference
   | link: https://en.cppreference.com/w/cpp/utility/expected

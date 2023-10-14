@@ -26,7 +26,6 @@ $open-dyslexic-font-family: 'OpenDyslexic', 'Comic Sans MS', 'Comic Sans', 'Verd
 * Mono Font Families
 **************/
 $mono-font-family: 'Consolas', 'Courier New', monospace;
-$courier-new-mono-font-family: 'Courier New', monospace;
 $open-dyslexic-mono-font-family: 'OpenDyslexicMono', monospace;
 
 /*************
@@ -82,7 +81,7 @@ footer {
   text-align: center;
 }
 
-.small-nav .settings-link svg {
+.small-nav svg {
   margin-top: 0.75em
 }
 
@@ -277,8 +276,6 @@ article {
 @include code-font(default, $mono-font-family);
 
 @include code-font(open-dyslexic, $open-dyslexic-mono-font-family);
-
-@include code-font(courier-new, $courier-new-mono-font-family);
 
 //////////////////////////
 // Accessibility Styles

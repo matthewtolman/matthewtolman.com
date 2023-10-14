@@ -42,7 +42,7 @@ test products for accessibility. As the trend grows to being more accessible, th
 knowing how to create accessible websites will grow in the web development community.
 
 For information on how to make accessible websites, W3C has published several articles on
-accessibility^[w3c-a11y].The a11y project also provides many resources on the topic^[a11-project].
+accessibility^[w3c-a11y].The a11y project also provides many resources on the topic^[a11y-project].
 
 For those who want a similar format to "100 Days of Code", there is "100 days of A11y"^[100-days].
 

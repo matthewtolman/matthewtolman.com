@@ -103,7 +103,17 @@
     </authors>
     <assets>
         <stylesheet type="scss" src="stylesheets/main.scss"/>
-
+        <script type="js" src="script/mathjax-fallback.js"/>
+        <copy src="favicon.ico"/>
+        <copy src="favicon-16x16.png"/>
+        <copy src="favicon-32x32.png"/>
+        <copy src="apple-touch-icon.png"/>
+        <copy src="favicon-16x16-dark.png"/>
+        <copy src="favicon-32x32-dark.png"/>
+        <copy src="apple-touch-icon-dark.png"/>
+        <copy src="android-chrome-512x512.png"/>
+        <copy src="android-chrome-192x192.png"/>
+        <copy src="site.webmanifest"/>
     </assets>
     <portfolio>
 

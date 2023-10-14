@@ -9,6 +9,19 @@ hljs.registerLanguage('zig', require('./hljs_langs/zig'))
 hljs.registerLanguage('odin', require('./hljs_langs/odin'))
 const fs = require('fs');
 const { ArticleTokenType } = require('./types');
+const htmlMinify = require('html-minifier')
+
+function minifyHtml(content) {
+  return htmlMinify.minify(content, {
+    collapseBooleanAttributes: true,
+    collapseInlineTagWhitespace: true,
+    collapseWhitespace: true,
+    minifyCSS: true,
+    minifyJS: true,
+    removeComments: true,
+    useShortDoctype: true
+  })
+}
 
 const dateFormat = "yyyy-MM-dd'T'HH:mm:ssXX";
 const mkdirp = require('mkdirp');
@@ -83,6 +96,30 @@ function loadSettings() {
         if (window.CSS && window.CSS.supports('color', 'var(--fake-var)')) {
             document.documentElement.style.setProperty('--font-size', localStorage.getItem('fontSize') + '%')
         }
+        
+        if (localStorage.getItem('js_polyfill') === 'true' && document.querySelector('.math-fallback')) {
+            var ps = document.createElement('script')
+            ps.src = 'https://polyfill.io/v3/polyfill.min.js?features=es6'
+            document.body.appendChild(ps)
+        }
+        
+        if (localStorage.getItem('js_mathJax') === 'true' && document.querySelector('.math-fallback')) {
+            var ms = document.createElement('script')
+            ms.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+            ms.addEventListener('load', function () {
+                MathJax.typesetPromise().then(function () {
+                  for(const elem of document.querySelectorAll('.math-fallback')) {
+                      elem.style['display'] = 'none'
+                  }
+                  for(const elem of document.querySelectorAll('.math-initial')) {
+                      elem.classList.remove('math-initial')
+                  }
+              }).catch(function (err) {
+                  console.error(err.message)
+              });
+            })
+            document.body.appendChild(ms)
+        }
     
         switch(localStorage.getItem('theme')) {
             case 'dark':
@@ -97,23 +134,66 @@ function loadSettings() {
 </script>`;
 
 const settingsIcon = fs.readFileSync(path.join(__dirname, 'settings.svg'));
+const rssIcon = fs.readFileSync(path.join(__dirname, 'rss.svg'));
 
 function blogMustacheBase(blog) {
   return {
     global_assets: blog.assets.stylesheets
       .map((s) => `<link rel="stylesheet" href="/${s.fileName}" />`)
       .concat([globalScript])
-      .join(''),
+      .join('') + `
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" media="(prefers-color-scheme: light)">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32-dark.png" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16-dark.png" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="/site.webmanifest">`,
     navigation: `<div class="large-nav">
-<span class="site-icon"><a class="blog-icon-link" href="/" aria-labelledby="blog-icon-l">${blog.icon}<span id="blog-icon-l" class="a11y-sr-only-nf">${blog.blogTitle}, Home</span></a></span><ul><li><a href="/">Blog</a></li><li class="settings-link-li"><a href="/settings.html">Settings</a></li></ul>
-</div><div class="small-nav">
-<span class="site-icon"><a class="blog-icon-link" href="/" aria-labelledby="blog-icon-s">${blog.icon}<span id="blog-icon-s" class="a11y-sr-only-nf">${blog.blogTitle}</span></a></span><ul><li class="settings-link-li"><a class="settings-link" href="/settings.html" aria-labelledby="settings-label">
-<span class="a11y-sr-only-nf">Settings</span>
-${settingsIcon}
-</a></li></ul>
-</div><noscript><style>.settings-link-li{display:none;}</style></noscript>`,
+  <span class="site-icon">
+    <a class="blog-icon-link" href="/" aria-labelledby="blog-icon-l">${blog.icon}
+      <span id="blog-icon-l" class="a11y-sr-only-nf">${blog.blogTitle}, Home</span>
+    </a>
+  </span>
+  <ul>
+    <li>
+      <a href="/">Blog</a>
+    </li>
+    <li class="settings-link-li">
+      <a href="/settings.html">Settings</a>
+    </li>
+    <li class="rss-link-li">
+      <a href="/feed">RSS</a>
+    </li>
+  </ul>
+</div>
+<div class="small-nav">
+    <span class="site-icon">
+        <a class="blog-icon-link" href="/" aria-labelledby="blog-icon-s">${blog.icon}
+            <span id="blog-icon-s" class="a11y-sr-only-nf">${blog.blogTitle}</span>
+        </a>
+    </span>
+    <ul>
+        <li class="settings-link-li">
+            <a class="settings-link" href="/settings.html" aria-labelledby="settings-label">
+                <span id="settings-label" class="a11y-sr-only-nf">Settings</span>
+                ${settingsIcon}
+            </a>
+        </li>
+        <li class="rss-link-li">
+            <a class="rss-link" href="/feed" aria-labelledby="rss-label">
+                <span id="rss-label" class="a11y-sr-only-nf">RSS Feed</span>
+                ${rssIcon}
+            </a>
+        </li>
+    </ul>
+</div>
+<noscript>
+<style>.settings-link-li{display:none;}</style>
+</noscript>`,
     copyright: `${blog.copyrightHolder}, ${new Date().getFullYear()}`,
-    privacyStatement: `Privacy Policy: We don't set cookies, we don't collect data. We are hosted by Cloudflare, so check their policies to see what they collect.`,
+    privacyStatement: `Privacy Policy: We don't set cookies or add analytics to our website.`,
+    rssLink: `<a href="/feed">RSS Feed</a>`
   };
 }
 
@@ -391,13 +471,13 @@ function generateArticleHtml([blog, files]) {
     files.concat(
       blog.articles.map((article) => {
         return {
-          content: render(blog.articleTemplate, {
+          content: minifyHtml(render(blog.articleTemplate, {
             ...blog,
             ...blogMustacheBase(blog),
             ...article,
             time: format(article.time, dateFormat),
             content: articleToHtml(article.content, blog),
-          }),
+          })),
           fileName: path.join(...`${article.id}.html`.split(':')),
         };
       })
@@ -435,7 +515,7 @@ function generateArticlesHtml([blog, files]) {
     files.concat(
       pages.map((articlePage, index) => {
         return {
-          content: render(blog.listTemplate, {
+          content: minifyHtml(render(blog.listTemplate, {
             ...blog,
             ...blogMustacheBase(blog),
             nextLink:
@@ -449,7 +529,7 @@ function generateArticlesHtml([blog, files]) {
               : '<span></span>',
             articles: articlePage,
             articleJson: JSON.stringify(blog.articles),
-          }),
+          })),
           fileName: index ? `page${index}.html` : 'index.html',
         };
       })
@@ -466,7 +546,7 @@ function generateSettingsHtml([blog, files]) {
         content: render(blog.settingsTemplate, {
           ...blog,
           ...blogMustacheBase(blog),
-          settings_html: `<h1>Settings</h1>
+          settings_html: minifyHtml(`<h1>Settings</h1>
 <form class="settings">
     <fieldset>
         <h2>Colors</h2>
@@ -493,10 +573,16 @@ function generateSettingsHtml([blog, files]) {
         <div>
             <label for="mono-font-family-select">Code Font</label>
             <select id="mono-font-family-select" onchange="updateCodeFont()">
-                <option class="default-code-font" value="">Consolas</option>
+                <option class="default-code-font" value="">Default (Consolas, Courier New)</option>
                 <option class="open-dyslexic-code-font" value="open-dyslexia-mono">Open Dyslexia Mono</option>
-                <option class="courier-new-code-font" value="courier-new">Courier New</option>
             </select>
+            <div>
+            ${generateCodeBlock('js', `// Sample Code
+function helloWolrd() {
+  const world = 'world'
+  console.log('hello ' + world)
+}`)}
+            </div>
         </div>
     </fieldset>
     <fieldset>
@@ -517,10 +603,29 @@ function generateSettingsHtml([blog, files]) {
             <input onchange="updateFontSize()" type="range" id="render-font-size" value="100" min="100" max="200" step="10"><label for="render-font-size"> Text Size</label>
         </div>
     </fieldset>
+    <fieldset>
+        <h2>3rd Party JavaScript</h2>
+        <div>
+            <input onchange="updateMathJax()" type="checkbox" id="load-mathjax"><label for="increased-letter-space"> Load <a href="https://www.mathjax.org/" target="_blank">MathJax</a> from <a href="https://www.jsdelivr.com/" target="_blank">jsdelivr.com</a> (provides accessibility and interactivity to math equations)</label>
+        </div>
+        <div>
+            <input onchange="updatePolyfill()" type="checkbox" id="load-polyfill"><label for="increased-letter-space"> Load <a href="https:/polyfill.io/" target="_blank">Pollyfill.io</a> from polyfill.io (helps fix bugs and issues in older browsers)</label>
+        </div>
+    </fieldset>
 </form>
 <script>
 function updateTheme() {
     localStorage.setItem('theme', document.getElementById('theme-select').value)
+    loadSettings()
+}
+
+function updateMathJax() {
+    localStorage.setItem('js_mathJax', document.getElementById('load-mathjax').checked)
+    loadSettings()
+}
+
+function updatePolyfill() {
+    localStorage.setItem('js_polyfill', document.getElementById('load-polyfill').checked)
     loadSettings()
 }
 
@@ -573,10 +678,12 @@ window.addEventListener('load', function () {
     document.getElementById('increased-word-space').checked = localStorage.getItem('increaseWordSpace') === 'true'
     document.getElementById('increased-line-height').checked = localStorage.getItem('increaseLineHeight') === 'true'
     document.getElementById('increased-paragraph-spacing').checked = localStorage.getItem('increaseParagraphSpace') === 'true'
+    document.getElementById('load-mathjax').checked = localStorage.getItem('js_mathJax') === 'true'
+    document.getElementById('load-polyfill').checked = localStorage.getItem('js_polyfill') === 'true'
     document.getElementById('render-font-size').value = localStorage.getItem('fontSize') || 100
     document.getElementById('theme-select').value = localStorage.getItem('theme') || ''
 })
-</script>`,
+</script>`),
         }),
       },
     ]),
@@ -585,7 +692,7 @@ window.addEventListener('load', function () {
 
 function writeFiles([blog, files]) {
   console.log(
-    `\n${blog.blogTitle}: Writing ${files.length + blog.assets.stylesheets.length} Files\n`
+    `\n${blog.blogTitle}: Writing ${files.length + blog.assets.stylesheets.length + blog.assets.scripts.length + blog.assets.copy.length} Files\n`
   );
   const baseDir = blog.outDir.split('/');
   const save = (file) => {
@@ -596,10 +703,24 @@ function writeFiles([blog, files]) {
       writeFile(path.join(...dir, fileArr.slice(-1)[0]), file.content)
     );
   };
+
+  const copy = (file) => {
+    if (typeof file !== 'object') {
+      return
+    }
+    console.log(`${blog.blogTitle}: Copying file: ${file.fileName}`);
+    const fileArr = file.fileName.split('/');
+    const dir = [...baseDir, ...fileArr.slice(0, -1)];
+    return mkdirp(path.join(...dir)).then(() =>
+        fs.copyFileSync(file.path, path.join(...dir, fileArr.slice(-1)[0]))
+    )
+  };
   return mkdirp(path.join(...baseDir)).then((_) =>
     Promise.all([
       ...files.map(save),
       ...blog.assets.stylesheets.map(save),
+      ...blog.assets.scripts.map(save),
+      ...blog.assets.copy.map(copy),
       blog.fontsFolder
         ? mkdirp(path.join(...baseDir, ...blog.fontsFolder.split('/'))).then(() =>
             copy(
@@ -779,9 +900,7 @@ function govPublication(refId, reference) {
 }
 
 function generateRssFeed([blog, files]) {
-  const rssFile = {
-    fileName: 'rss.xml',
-    content: `<?xml version="1.0" encoding="UTF-8" ?>
+  const content = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 <channel>
   <title>${blog.blogTitle}</title>
@@ -792,9 +911,22 @@ function generateRssFeed([blog, files]) {
   ${blog.articles.map(articleToRss(blog)).join('')}
 </channel>
 
-</rss> `,
+</rss> `
+  const feedFile = {
+    fileName: 'feed',
+    content,
   };
-  return [blog, files.concat([rssFile])];
+
+  const legacyRssFile = {
+    fileName: 'rss.xml',
+    content,
+  };
+
+  const rssFile = {
+    fileName: 'rss',
+    content,
+  };
+  return [blog, files.concat([feedFile, rssFile, legacyRssFile])];
 }
 
 function articleToRss(blog) {
