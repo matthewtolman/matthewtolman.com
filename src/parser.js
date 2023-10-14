@@ -109,7 +109,7 @@ async function addAssets([xml, blog]) {
 
                       return toFile(a)
                     })
-                ).then((files) => ['copy', files])
+                ).then((files) => ['to_copy', files])
               default:
                 console.warn('Unsupported asset type ' + type);
                 return null;
@@ -120,7 +120,7 @@ async function addAssets([xml, blog]) {
   blog.assets = assetsArray.reduce((a, c) => ({...a, [c[0]]: c[1]}), {});
   blog.assets.stylesheets ||= []
   blog.assets.scripts ||= []
-  blog.assets.copy ||= []
+  blog.assets.to_copy ||= []
   return [xml, blog];
 }
 

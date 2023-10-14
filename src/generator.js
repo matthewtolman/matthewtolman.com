@@ -691,7 +691,7 @@ window.addEventListener('load', function () {
 
 function writeFiles([blog, files]) {
   console.log(
-    `\n${blog.blogTitle}: Writing ${files.length + blog.assets.stylesheets.length + blog.assets.scripts.length + blog.assets.copy.length} Files\n`
+    `\n${blog.blogTitle}: Writing ${files.length + blog.assets.stylesheets.length + blog.assets.scripts.length + blog.assets.to_copy.length} Files\n`
   );
   const baseDir = blog.outDir.split('/');
   const save = (file) => {
@@ -703,7 +703,7 @@ function writeFiles([blog, files]) {
     );
   };
 
-  const copy = (file) => {
+  const to_copy = (file) => {
     if (typeof file !== 'object') {
       return
     }
@@ -719,7 +719,7 @@ function writeFiles([blog, files]) {
       ...files.map(save),
       ...blog.assets.stylesheets.map(save),
       ...blog.assets.scripts.map(save),
-      ...blog.assets.copy.map(copy),
+      ...blog.assets.to_copy.map(to_copy),
       blog.fontsFolder
         ? mkdirp(path.join(...baseDir, ...blog.fontsFolder.split('/'))).then(() =>
             copy(
