@@ -232,9 +232,7 @@ function generateTableCode(head, body) {
 
 function generateInlineCode(lang, code) {
   // We do an htmlDecode since the incoming content is htmlEncoded and hljs will do an additional htmlEncode
-  return `<span class="hljs language-${htmlEncode(lang)}">${
-      hljs.highlight(htmlDecode(code), { language: lang }).value
-  }</span>`;
+  return `<span class="inline-code">${code}</span>`;
   // return
 }
 

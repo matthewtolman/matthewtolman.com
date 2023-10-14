@@ -178,9 +178,9 @@ allows developers to provide a custom implementation of an interface).
 
 However, since Java chose to have the errors as part of the method signature, we can't "throw" an error in the
 implementation. If we did, that would be a violation of the interface specification! But we may not always be able to
-correct the error in our implementation. For instance, what if in some cases we wanted to try the `RequestNumberGenerator`
-implementation first, but then fallback to the `StaticNumberGenerator` implementation? If the `RequestNumberGenerator`
-wasn't allowed to tell us if it failed, we wouldn't be able to implement our fallback logic.
+correct the error in our implementation. For instance, what if in some cases we wanted to try the
+`RequestNumberGenerator` implementation first, but then fallback to the `StaticNumberGenerator` implementation? If the
+`RequestNumberGenerator` wasn't allowed to tell us if it failed, we wouldn't be able to implement our fallback logic.
 
 The workaround is to "hide" the errors that are thrown by using `RuntimeException`. This allows us to throw whenever we
 need to without changing the interface. But, now we're back to square one. We weren't able to identify when we threw
@@ -189,8 +189,7 @@ it throws an error, but then we ran into an issue with interfaces, so we decided
 errors, which means we don't actually know when code throws an error.
 
 In fact, we're in a worse place because now we have a system which lets people *think* they know when an error will be
-thrown, but that system is *incorrect* and so now we can have code which *appears* to not throw but in reality it *does*
-throw.
+thrown, but that system is *incorrect* and so now we can have code which *appears* to not throw but in reality it *does* throw.
 
 Other systems with annotating thrown errors run into similar issues. For instance, PHP lets users annotate the errors
 which are thrown. However, interfaces run into the same issue as Java interfaces, so we won't always know when a method
@@ -400,7 +399,7 @@ func DoSomethingWithFile(fileName string) {
 
 Languages with built-in defer (or equivalent) support include:
 * Zig^[zig-defer]
-  * Uses scoped defer
+  * Uses scoped defer (and also has error-specific defers^[zig-errdefer])
 * Go^[go-defer]
   * Uses function defer
 * D^[d-scope-exit]
@@ -773,25 +772,32 @@ Below is some JavaScript code that demonstrates the success and error paths.
 ```javascript
 (async () => {
   let p = Promise.resolve(
-      (Math.random() * 10) | 0)                
+      (Math.random() * 10) | 0)         
+      // Success Path            Error path
+      
+      // Map the random number    
       .then(v => {                             
         if (v % 2 === 0) {                     
             throw new Error(v)
         }
         return v
       })
+                              // Attempt recovery
                               .catch(err => {
                                 if (+err.message === 4) {
                                   throw new Error('move along')
                                 }
                                 return 99998
                               })
+      // Increment on success
       .then(v => {
         return v + 1
       })
+                              // Attempt recovery
                               .catch(err => {
                                 return -1001
                               })
+      // Double value
       .then(v => {
         return v * 2
       })
@@ -814,6 +820,12 @@ occur.
   | page-title: Zig Language Reference
   | website-title: Zig
   | link: https://ziglang.org/documentation/master/#defer
+  | date-accessed: 2022-09-09
+* zig-errdefer
+  | type: web
+  | page-title: Zig Language Reference
+  | website-title: Zig
+  | link: https://ziglang.org/documentation/master/#errdefer
   | date-accessed: 2022-09-09
 * go-defer
   | type: web

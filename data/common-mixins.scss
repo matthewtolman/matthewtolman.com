@@ -55,7 +55,7 @@
     word-spacing: $word-spacing;
   }
 
-  pre, code {
+  pre, code, .inline-code {
     font-family: $default-mono-font-family;
   }
 }
