@@ -231,30 +231,40 @@ especially in early stages of development when SELECTs and JOINs are in flux as 
 try to figure out what data is needed to accomplish the (changing) feature requests.
 
 Though one thing I did notice is that the system quickly broke down for a lot of teams
-who were annoyed with having to write a new DB migration to just change a query. Often,
-when the system broke what devs were doing was turning SQL into a key/value document
+who were annoyed with having to write a new DB migration just to add a new field to a query.
+This was especially common if a team member had previously caught the attention of the DBAs
+before, so their migration scripts were often more heavily scrutinized. These problems were
+amplified by poor management practices, frequent changes to requirements, and an insane
+pressure to deliver features quickly and consistently (they literally announced that they would
+fire devs who delivered the least amount of features each year).
+
+The result was that devs usually ended up turning their SQL tables into a key/value document
 store where all the data was a giant JSON blob. This meant they only ever had a few
 stored procedures (add entry, update entry, get entry, delete entry) which were set up
-once, and then they never worried about SQL again. Instead, they would stream everything
-into memory and process the data stream using their programming language of choice and
+once, and then they never worried about SQL migrations again. Instead, they would load everything
+into memory and process the data using their programming language of choice and
 just ignore the power of the database. All of this happened because a) the friction to do
-query changes in code was much lower than changing queries in the database and b) there
-was enough continuous flux to make the friction of query changes very painful.
+changes in code was much lower than changing the database and b) there was enough exposure
+to the painful friction.
 
-While not every organization which does implement this method will encounter these
-issues, it is important to look out for shortcuts like this and to understand *why* they
-are happening. It's not because the developers are bad at their job, it's because
-the system they are in was set up to encourage the "bad practices" (high friction
+While not every organization which does stored procedures for everything will encounter these
+issues, it is important to look out for developers taking shortcuts (e.g. key/value stores and
+massive JSON blobs) and to take time to understand *why* these shortcuts
+are happening. It's usually not because the developers are bad at their job, rather it
+tends to happen because the system the company setup encourages the "bad practices" (e.g. high friction
 combined with frequent exposure to that friction).
 
-Still, teams that already have a database migration system will find this system pretty
-straightforward to implement.
+Teams that already have a database migration system will find this system pretty straightforward to
+implement. Many teams with a conducive environment and sense of discipline could maintain this pattern
+for a while. However, scaling this pattern organization wide and having it succeed is extremely difficult,
+if not impossible for many organizations.
 
 ## SQL as files
 
 Now we get to the system that I've been experimenting with. It's similar to the stored
-procedures with one main exception: queries are stored in resource files instead of the
-database. The above code becomes the following:
+procedures with one main exception: queries are stored in resource files inside the
+codebase instead of as stored procedures inside the database. Below is an example to
+load and run SQL queries:
 
 
 ```kotlin
@@ -301,7 +311,7 @@ class App {}
 fun main(args: Array<String>) = SpringApplication.run(App::class, args)
 
 // src/resources/createUser.sql
--- Note: could use variables to make it easier to know what is being substituted
+-- Note: you sould use named parameters when using a driver which supports named parameters
 DECLARE @ID int;
 INSERT INTO users (email, password) VALUES (?, ?);
 SELECT @ID = scope_identity();
@@ -327,7 +337,10 @@ helpful for IDEs that have SQL tooling built in, like IntelliJ.
 
 One thing that isn't as great is we now have a separation between how the substituted
 parameters are declared and where they're used. If someone changes the query slightly,
-then we could end up with code substituting in the wrong values.
+then we could end up with code substituting in the wrong values. This problem is amplified
+with the built-in JVM drivers since the built-in drivers only support positional parameters,
+not named parameters. However, there are many drivers for various languages with named
+parameter support, and using named parameters greatly reduces this issue.
 
 We are also referencing file names throughout our code. If a popular query gets
 renamed, it would require lots of changes (prepared statements has the same problem
@@ -394,11 +407,18 @@ class UserController {
     @ResponseBody
     fun createUser(body: Map<String, *>) {
         NewUserValidator(body).assertIsValid() /* class & method definition not shown for brevity */
-        sql.execute(SqlQueries.NEW_USER, mapOf(
-            "email" to body["email"],
-            "password" to PasswordHasher.hash(body["password"] as String),
-            "theme" to "light",
-            "font" to "Consolas"
+        
+        // This is where we run our query
+        sql.execute(
+            // Specify which query to use via an enum
+            SqlQueries.NEW_USER,
+            // Map of parameters to values
+            mapOf(
+                "email" to body["email"],
+                "password" to PasswordHasher.hash(body["password"] as String),
+                "theme" to "light",
+                "font" to "Consolas"
+            )
         )
     }
 }
@@ -426,9 +446,9 @@ the map. Or if we renamed a file, we'd only have to update the enum and not the 
 Of course, there is the question of "why not use named parameters"? The answer is that
 named parameters don't exist in vanilla JDBC. I'd have to pull in a library for that.
 Right now, I'm trying to keep the ideas and libraries I'm playing with limited since I'm
-already pushing it for an experiment project, which is why I stayed with vanilla JDBC.
+already pushing it for a quick experiment project.
 
-That said, not all languages and libraries are limited to that. If we were in Node and
+That said, not all languages and code bases are limited to those restrictions. If we were in Node and
 had a library with named parameters, we could do something like the following:
 
 ```typescript
@@ -450,12 +470,17 @@ export interface User {
 }
 
 export async function create_user(user: User) {
-    await runQuery(QUERIES.NEW_USER, {
-        "email": user.email,
-        "password": hashPassword(user.password),
-        "font": "Consolas",
-        "theme": "light"
-    })
+    await runQuery(
+        // Specify our query with a constant
+        QUERIES.NEW_USER,
+        // Map of named parameters
+        {
+            "email": user.email,
+            "password": hashPassword(user.password),
+            "font": "Consolas",
+            "theme": "light"
+        }
+    )
 }
 
 // resources/create_user.sql
@@ -468,7 +493,8 @@ SELECT user_id, :font, :theme FROM userInsert;
 
 The concept does become simpler with the right tooling available. At some point, I may
 look at adding in a library with named parameters to my Kotlin implementation. For now
-though, what I have works for my little project.
+though, what I have works for my personal experiment project, and I'll probably continue
+the experiment with a non JVM language in the future anyways.
 
 I am looking forward to playing around with the concept more. The idea hasn't been fully
 tested yet. I do need to look at long-term maintainability, which will take time. At

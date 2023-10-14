@@ -1177,27 +1177,23 @@ have validated that the current user was a moderator for the subreddit before se
 code doesn't know that we already validated the user's permissions, so it has to rerun the database queries and revalidate
 the user.
 
-However, if we had adopted a more "stateless" mentality, we could start de-duplicating the queries at the start of the
+If we had adopted a more "stateless" mentality, we could start de-duplicating the queries at the start of the
 request. Instead of having each class and method grab the current user's role, we could pass that in. Instead of our
 email service taking in a user id and then grabbing the user's email, we could pass in the user's email directly. These
 types of changes would allow for fewer database calls as well as more testable logic.
 
 ## Streaming data with stateless
 
-So far we've talked about a lot of the benefits of stateless code. However, all of our examples have assumed that the
-data we're working with fits in memory. But what about when it doesn't fit in memory? What if we need to stream our data
+So far we've talked about a lot of the benefits of stateless code. But all of our examples have assumed that the
+data we're working with fits in memory. What happens when our data doesn't fit in memory? What if we need to stream our data
 from a database or a disk?
 
-Streaming data in is one of the reasons state gets mixed in with business logic in the first place. Streaming data into
-memory is also very common with report generation since reports can often have to aggregate and organize more data than
-a single request can fit in memory.
-
-Even in these situations, stateless business logic can be achieved. The trick is to let an abstraction outside the
-logic handle streaming the data.
+Even in these situations, stateless business logic can be achieved. The trick is to let the data streaming code live outside the
+logic handle streaming the data, and then provide a data collection abstraction to our logic code.
 
 For instance, many languages have the concept of "iterators." Iterators allow developers to define a custom collection
-of values which can be iterated over in sequence. Nothing states that the iterated collection must live in memory. In
-fact, iterators are often the most powerful when the full does not live in memory.
+of values which can be iterated over in sequence. The iterated collection does not need to live in memory. In
+fact, iterators are often the most powerful when the full collection does not live in memory.
 
 For this example, let's assume we wanted to process a list transactions to get the current balance. A simple, stateless,
 non-iterator approach may look like the following:
