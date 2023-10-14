@@ -118,9 +118,9 @@ async function addAssets([xml, blog]) {
           .filter((t) => t)
   );
   blog.assets = assetsArray.reduce((a, c) => ({...a, [c[0]]: c[1]}), {});
-  blog.assets.stylesheets ||= []
-  blog.assets.scripts ||= []
-  blog.assets.to_copy ||= []
+  blog.assets.stylesheets = blog.assets.stylesheets || []
+  blog.assets.scripts = blog.assets.scripts || []
+  blog.assets.to_copy = blog.assets.to_copy || []
   return [xml, blog];
 }
 
