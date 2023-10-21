@@ -13,6 +13,21 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <article published="Yes"
+                 title="What is property testing?"
+                 id="article:what-is-property-testing"
+                 author="auth:mtolman" time="2023-09-10T00:00:00-0700"
+                 file="what-is-property-testing.md">
+            <description>
+                Property testing is a developmental approach to writing tests (both unit tests and integration tests) which
+                helps developers find the limitations of their software. It isn't an all-encompassing set of principles
+                or practices which impact the development lifecycle, unlike Test Driven Development.
+
+                Instead, property tests focus on giving developers more tools for the actual test implementation, regardless
+                of the testing practices which exist. Additionally, these tools aim to provide far better coverage and depth
+                to testing than simple "line coverage" and "branch coverage" metrics can provide.
+            </description>
+        </article>
+        <article published="Yes"
                  title="Error Handling Across Programming Languages"
                  id="article:error-handling-across-programming-languages"
                  author="auth:mtolman" time="2023-09-10T00:00:00-0700"
