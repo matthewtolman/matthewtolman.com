@@ -21,8 +21,7 @@ coverage metrics. Property testing becomes even more beneficial when there are "
 that's common with code that throws exceptions (especially type errors) at runtime.
 
 This article aims to be an introduction to property testing. I will also introduce a property testing framework which
-I have written in [JavaScript/TypeScript](https://gitlab.com/mtolman/js-prop-tests/) (which is a port of one that I 
-wrote in [C++](https://gitlab.com/mtolman/c-property-testing)). In a future article I will discuss how I made my
+I have written in (JavaScript/TypeScript)[https://gitlab.com/mtolman/js-prop-tests/]. I also wrote a framework in (C++)[https://gitlab.com/mtolman/c-property-testing]. In a future article I will discuss how I made my
 framework, some of the design decisions (and mistakes) I made, and what the future holds for those property testing
 frameworks (including potential ports to other languages).
 
