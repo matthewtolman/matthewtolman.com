@@ -15,7 +15,7 @@
         <article published="Yes"
                  title="What is property testing?"
                  id="article:what-is-property-testing"
-                 author="auth:mtolman" time="2023-09-10T00:00:00-0700"
+                 author="auth:mtolman" time="2023-10-23T00:00:00-0700"
                  file="what-is-property-testing.md">
             <description>
                 Property testing is a developmental approach to writing tests (both unit tests and integration tests) which
