@@ -15,11 +15,12 @@
             </header>
             <nav>{{{navigation}}}</nav>
             <main id="main" class="post">
+                <h1>{{title}}</h1>
+                <div class="author">Written by {{author.name}}</div>
+                Published: <time datetime="{{time}}" id="time-display">{{time}}</time>
+                <div class="reading-time">Estimated reading time: {{reading_time}}</div>
+                <script>if (window.Intl && window.Intl.DateTimeFormat) { document.getElementById('time-display').innerText = (new window.Intl.DateTimeFormat()).format(new Date('{{time}}')) }</script>
                 <article>
-                    <h1>{{title}}</h1>
-                    <div class="author">Written by {{author.name}}</div>
-                    Published: <time datetime="{{time}}" id="time-display">{{time}}</time>
-                    <script>if (window.Intl && window.Intl.DateTimeFormat) { document.getElementById('time-display').innerText = (new window.Intl.DateTimeFormat()).format(new Date('{{time}}')) }</script>
                     {{{content}}}
                 </article>
                 <aside class="sidebar">{{{tagTitle}}}{{#tags}}<a><div class="tag">{{.}}</div></a>{{/tags}}</aside>

@@ -143,12 +143,10 @@ function blogMustacheBase(blog) {
       .map((s) => `<link rel="stylesheet" href="/${s.fileName}" />`)
       .concat([globalScript])
       .join('') + `
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" media="(prefers-color-scheme: light)">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" media="(prefers-color-scheme: light)">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" media="(prefers-color-scheme: light)">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32-dark.png" media="(prefers-color-scheme: dark)">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16-dark.png" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="icon" type="image/svg" href="/favicon.svg" />
 <link rel="manifest" href="/site.webmanifest">`,
     navigation: `<div class="large-nav">
   <span class="site-icon">
@@ -450,6 +448,104 @@ function contentToHtml(tokens, blog, references = {}, sections = []) {
   return res;
 }
 
+function contentToText(tokens, blog, references = {}, sections = []) {
+  const res = [];
+
+  function processList(token, tokens) {
+    const elems = [`\n${contentToText(token.data, blog, references, sections).join('')}\n`];
+    let j = 0;
+    for (; j < tokens.length; ++j) {
+      const nextToken = tokens[j];
+      if (typeof nextToken === 'string') {
+        break;
+      } else if (nextToken.type !== ArticleTokenType.LIST) {
+        break;
+      } else if (nextToken.attrs.leadingWhitespace.length < token.attrs.leadingWhitespace.length) {
+        break;
+      } else if (nextToken.attrs.leadingWhitespace.length > token.attrs.leadingWhitespace.length) {
+        const [count, child] = processList(nextToken, tokens.slice(j + 1));
+        j += count;
+        elems.push(child);
+      } else if (token.attrs.ordered !== nextToken.attrs.ordered) {
+        break;
+      } else {
+        elems.push(
+          `\n${contentToText(nextToken.data, blog, references, sections).join('')}\n`
+        );
+      }
+    }
+    return [j, `${elems.join('')}`];
+  }
+
+  for (let i = 0; i < tokens.length; ++i) {
+    const token = tokens[i];
+    if (typeof token === 'string') {
+      res.push(token);
+    } else {
+      const content = () => contentToText(token.data, blog, references, sections).join('');
+      switch (token.type) {
+        case ArticleTokenType.BLOCK_QUOTE:
+        case ArticleTokenType.BOLD_ITALIC:
+        case ArticleTokenType.BOLD:
+        case ArticleTokenType.EMPHASIS:
+        case ArticleTokenType.ITALIC:
+        case ArticleTokenType.PARAGRAPH_BREAK:
+        case ArticleTokenType.HEADER:
+        case ArticleTokenType.PARAGRAPH:
+        case ArticleTokenType.LINK:
+        case ArticleTokenType.CODE_BLOCK:
+        case ArticleTokenType.MATH:
+        case ArticleTokenType.INLINE_CODE:
+          res.push(` ${content()}`);
+          break;
+        case ArticleTokenType.LIST: {
+          const [count, str] = processList(token, tokens.slice(i + 1));
+          res.push(str);
+          i += count;
+          break;
+        }
+        case ArticleTokenType.REFERENCE:
+        case ArticleTokenType.TABLE_OF_CONTENTS:
+        case ArticleTokenType.REF:
+        case ArticleTokenType.ELEM: {
+          break;
+        }
+        case ArticleTokenType.OBJ_LINK: {
+          const articles = blog.articles.filter((a) => a.id === token.attrs.ref);
+          if (articles.length === 0) {
+            throw `Invalid article id ${token.attrs.ref}`;
+          }
+          const article = articles[0];
+          res.push(` ${article.title}`);
+          break;
+        }
+        case ArticleTokenType.TABLE:
+          res.push(generateTableText(token.attrs.head, token.attrs.body));
+          break;
+      }
+    }
+  }
+  return res;
+}
+
+function articleToText(content, blog) {
+  return contentToText(content.tokens, blog, content.references, content.sections).join('')
+}
+
+function generateTableText(head, body) {
+  let res = ''
+  for (const headCell of head) {
+    res += " " + headCell;
+  }
+  for (const row of body) {
+    res += "\n"
+    for (const cell of row) {
+      res += ` ${cell}`
+    }
+  }
+  return res
+}
+
 function articleToHtml(content, blog) {
   return (
     `<a tabindex="-1" class="anchor" id="__top"></a>` +
@@ -476,12 +572,23 @@ function generateArticleHtml([blog, files]) {
             ...article,
             time: format(article.time, dateFormat),
             content: articleToHtml(article.content, blog),
+            reading_time: readingTime(articleToText(article.content, blog))
           })),
           fileName: path.join(...`${article.id}.html`.split(':')),
         };
       })
     ),
   ];
+}
+
+function readingTime(article) {
+  const wpm = 200;
+  const words = article.trim().split(/\s+/).length;
+  const minutes = Math.ceil(words / wpm);
+  if (minutes != 1) {
+    return `${minutes} minutes`
+  }
+  return `1 minute`
 }
 
 function paginate(arr, pageSize) {

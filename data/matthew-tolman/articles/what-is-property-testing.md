@@ -636,7 +636,7 @@ to the following:
     ------------------------------------------------
     Seed: 1975078912
     Original Input: [-503,-128,-193]
-    Simplified Input: [-333,-333,-333]
+    Simplified Input: [-10,-10,-10]
     ------------------------------------------------
 
     expect(received).toEqual(expected) // deep equality
@@ -1537,51 +1537,51 @@ I haven't used most of them, but the ones I have used (or written) are annotated
 
 #### C++
 
-* (C++ Property Testing)[https://gitlab.com/mtolman/c-property-testing]
+* [C++ Property Testing](https://gitlab.com/mtolman/c-property-testing)
   * My framework
-* (Rapidcheck)[https://github.com/emil-e/rapidcheck]
+* [Rapidcheck](https://github.com/emil-e/rapidcheck)
   * This was the framework I used before making my own. Really well-made, I still highly recommend it
-* (CppQuickCheck)[https://github.com/grogers0/CppQuickCheck]
+* [CppQuickCheck](https://github.com/grogers0/CppQuickCheck)
 
 #### Clojure
 
-* (clojure.spec)[https://clojure.org/about/spec]
+* [clojure.spec](https://clojure.org/about/spec)
   * Also really good. This was the first property testing framework I ever used. It also integrated into documentation generation
 
 
 #### Go
 
-* (rapid)[https://github.com/flyingmutant/rapid]
-* (gopter)[https://pkg.go.dev/github.com/leanovate/gopter]
+* [rapid](https://github.com/flyingmutant/rapid)
+* [gopter](https://pkg.go.dev/github.com/leanovate/gopter)
 
 #### Haskell
 
-* (QuickCheck)[https://hackage.haskell.org/package/QuickCheck]
+* [QuickCheck](https://hackage.haskell.org/package/QuickCheck)
   * The basis for almost all property test frameworks
 
 #### Java
 
-* (jqwik)[https://jqwik.net/]
+* [jqwik](https://jqwik.net/)
 
 #### JavaScript
 
-* (@matttolman/prop-test)[https://gitlab.com/mtolman/js-prop-tests/]
+* [@matttolman/prop-test](https://gitlab.com/mtolman/js-prop-tests/)
   * My framework
-* (JsVerify)[https://jsverify.github.io/]
-* (fast-check)[https://github.com/dubzzz/fast-check]
+* [JsVerify](https://jsverify.github.io/)
+* [fast-check](https://github.com/dubzzz/fast-check)
 
 #### .NET
 
-* (FsCheck)[https://fscheck.github.io/FsCheck/]
+* [FsCheck](https://fscheck.github.io/FsCheck/)
 
 #### Python
 
-* (hpothesis)[https://github.com/HypothesisWorks/hypothesis]
+* [hpothesis](https://github.com/HypothesisWorks/hypothesis)
 
 #### Rust
 
-* (quickheck)[https://crates.io/crates/quickcheck]
-* (proptest)[https://crates.io/crates/proptest]
+* [quickheck](https://crates.io/crates/quickcheck)
+* [proptest](https://crates.io/crates/proptest)
 
 @References
 

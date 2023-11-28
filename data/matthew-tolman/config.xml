@@ -13,6 +13,15 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <article published="Yes"
+                 title="Writing a property test library"
+                 author="auth:mtolman" time="2023-11-28T16:08:00-0700"
+                 id="article:writing-a-property-test-library"
+                 file="writing-property-test-library.md">
+            <description>
+                My journey creating a property testing library, including the mistakes and learnings I had along the way. I go over my requirements for a framework, and my attempts at designing the core generation and simplification aspects. It also covers my progress as I switched between programming languages to get different perspectives.
+            </description>
+        </article>
+        <article published="Yes"
                  title="What is property testing?"
                  id="article:what-is-property-testing"
                  author="auth:mtolman" time="2023-10-23T00:00:00-0700"
@@ -123,9 +132,6 @@
         <copy src="favicon-16x16.png"/>
         <copy src="favicon-32x32.png"/>
         <copy src="apple-touch-icon.png"/>
-        <copy src="favicon-16x16-dark.png"/>
-        <copy src="favicon-32x32-dark.png"/>
-        <copy src="apple-touch-icon-dark.png"/>
         <copy src="android-chrome-512x512.png"/>
         <copy src="android-chrome-192x192.png"/>
         <copy src="site.webmanifest"/>
