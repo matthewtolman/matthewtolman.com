@@ -105,7 +105,7 @@ export default class Random {
 }
 ```
 
-At this point, we already have a pretty significant divergence from the original C code. If we run the TypeScript code, we'll end up with the following state array:
+At this point, we already have a pretty significant divergence from the original C code. If we run the TypeScript code with the seed `2545341989`, we'll end up with the following state array:
 
 ```json
 [ 1409262081, -1124371832, 867272735, -2057235969 ]
