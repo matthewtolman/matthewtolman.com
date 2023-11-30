@@ -22,17 +22,19 @@
                 TODO
             </description>
         </article>
+
+        <!-- Published -->
         <article published="Yes"
                  title="Unsigned Integers in JavaScript"
                  author="auth:mtolman" time="2023-11-30T16:00:00-0700"
                  id="article:unsigned-integers-in-javascript"
                  file="unsigned-integers-in-javascript.md">
             <description>
-                TODO
+                Lately I've been experimenting with creating random data generators in TypeScript. I wanted to avoid using the global random number generator `Math.random` since I wanted my generators to be fully determinitic (i.e. if you give them the same input, they will always return the same output). I also wanted a seed to be passed in every time, which meant that I'd be creating a new generator every time.
+
+                I started looking at alternatives and found TinyMT, which is a memory-friendly version of Mersenne Twister written in C. I decided to port it over to TypeScript, and I ran into a lot of issues due to the differences between C and JavaScript/TypeScript when it comes to numbers. Specifically, I had a lot of issues with unsigned integer arithmetic. After I got it all working, I decided to write this blog post about my journey with unsigned integer arithmetic in TypeScript/JavaScript.
             </description>
         </article>
-
-        <!-- Published -->
         <article published="Yes"
                  title="Writing a property test library"
                  author="auth:mtolman" time="2023-11-28T16:08:00-0700"
