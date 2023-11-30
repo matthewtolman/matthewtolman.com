@@ -1038,6 +1038,7 @@ function generateRssFeed([blog, files]) {
 
 function articleToRss(blog) {
   return (article) => {
+    if (article.published.toLowerCase() !== 'yes') return ''
     return `<item>
 <pubDate>${format(article.time, 'E, dd LLL yyyy HH:mm:ss XXXX')}</pubDate>
 <title>${article.title}</title>
