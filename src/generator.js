@@ -612,6 +612,7 @@ const pageSize = 10;
 function generateArticlesHtml([blog, files]) {
   const pages = paginate(
     blog.articles
+      .filter(a => a.published.toLowerCase() === 'yes')
       .sort((l, r) => (l.time < r.time ? 1 : l.time === r.time ? 0 : -1))
       .map((a) => ({ ...a, uri: articleUri(a), time: format(a.time, dateFormat) })),
     pageSize

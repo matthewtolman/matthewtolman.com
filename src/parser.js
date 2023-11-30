@@ -244,8 +244,6 @@ function addArticles([xml, blog]) {
     articles = [articles];
   }
 
-  articles = articles.filter((a) => a._attr.published.toLowerCase() === 'yes');
-
   return Promise.all(
     articles.map((article) =>
       parseArticle(path.join('data', blog.id, 'articles', ...article._attr.file.split('/'))).then(
