@@ -8,7 +8,7 @@ In this post, I'll discuss my experience making [C++ Property Testing](https://g
 
 ## Defining the Requirements
 
-Many property testing frameworks try to be a port of Haskell's QuckCheck^[quickheck]. However, while that seems specific, it doesn't really help in defining what a property testing framework should do. I spent quite a bit of time trying looking through several different libraries, and I realized that many of them vary widely in features that are available (shrinking vs non-shrinking, input generators, syntax, etc). So I started taking notes on similarites to create my list. The bare minimum which I found among property testing framework is:
+Many property testing frameworks try to be a port of Haskell's QuckCheck^[quickcheck]. However, while that seems specific, it doesn't really help in defining what a property testing framework should do. I spent quite a bit of time trying looking through several different libraries, and I realized that many of them vary widely in features that are available (shrinking vs non-shrinking, input generators, syntax, etc). So I started taking notes on similarites to create my list. The bare minimum which I found among property testing framework is:
 
 * Procedurally generate "random" inputs
     * Must be deterministic (aka. if we set the same seed we get the same output)
@@ -443,7 +443,7 @@ There were other things I may talk about at some point too, such as my journey w
   | page-title: Email Address
   | website-title: Wikipedia
   | date-accessed: 2023-10-26
-* emaill-address-2
+* email-address-2
   | type: web
   | link: https://www.rfc-editor.org/rfc/rfc5322#section-3.4
   | page-title: Internet Message Format

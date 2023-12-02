@@ -200,9 +200,9 @@ function flattenTokens(tokens) {
   return tokens.flatMap((t) => (typeof t === 'string' ? t : [t, ...flattenTokens(t.data)]));
 }
 
-function headerId(header, blog, references = {}, sections = []) {
+function headerId(header, blog, references = {}, sections = [], count = '') {
   const content = contentToHtml(header.data, blog, references, sections).join('');
-  return content.replace(/[^a-zA-Z0-9_]/g, '--').toLowerCase();
+  return content.replace(/[^a-zA-Z0-9_]/g, '--').toLowerCase() + '__' + count;
 }
 
 function generateTableCode(head, body) {
@@ -308,7 +308,8 @@ function contentToHtml(tokens, blog, references = {}, sections = []) {
               token,
               blog,
               references,
-              sections
+              sections,
+              token.attrs.count
             )}">${content()}</h${token.attrs.level || 1}>`
           );
           break;
@@ -364,7 +365,7 @@ function contentToHtml(tokens, blog, references = {}, sections = []) {
                 level: header.attrs.level,
                 headers: [],
                 name: contentToHtml(header.data, blog, references, sections).join(''),
-                id: headerId(header, blog, references, sections),
+                id: headerId(header, blog, references, sections, header.attrs.count),
               };
               curTreeNode.headers.push(newTreeNode);
               curTreeNode = newTreeNode;

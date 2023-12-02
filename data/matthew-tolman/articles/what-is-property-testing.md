@@ -1580,7 +1580,7 @@ I haven't used most of them, but the ones I have used (or written) are annotated
 
 #### Rust
 
-* [quickheck](https://crates.io/crates/quickcheck)
+* [quickcheck](https://crates.io/crates/quickcheck)
 * [proptest](https://crates.io/crates/proptest)
 
 @References

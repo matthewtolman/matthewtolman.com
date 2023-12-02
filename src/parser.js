@@ -276,6 +276,7 @@ function parseArticle(fileName) {
 }
 
 function parse(str) {
+  let headerCount = 0
   const result = {
     tokens: [],
     references: {},
@@ -321,14 +322,16 @@ function parse(str) {
         attrs: { ref: (match.groups.obj_link || '').slice(2, -2) },
       });
     } else if (match.groups.header_level && match.groups.header) {
+      const count = ++headerCount
       result.sections.push({
         title: (match.groups.header || '').trim(),
         level: match.groups.header_level.length || 1,
+        count
       });
       result.tokens.push({
         type: ArticleTokenType.HEADER,
         data: [(match.groups.header || '').trim()],
-        attrs: { level: match.groups.header_level.length || 1 },
+        attrs: { level: match.groups.header_level.length || 1, count},
       });
     } else if (match.groups.ref) {
       result.tokens.push({

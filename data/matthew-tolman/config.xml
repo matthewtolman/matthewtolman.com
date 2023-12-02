@@ -13,17 +13,19 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <!-- In Progress -->
-        <article published="No"
+        <!-- Published -->
+        <article published="Yes"
                  title="Overview of globally unique identifiers"
-                 author="auth:mtolman" time="2023-11-29T16:08:00-0700"
+                 author="auth:mtolman" time="2023-12-02T16:12:00-0700"
                  id="article:overview-of-globally-unique-identifiers"
                  file="overview-of-globally-unique-identifiers.md">
             <description>
-                TODO
+               Recently I saw that CUID, a way to generate unique IDs, had been deprecated due to security concerns.
+
+That got me really curious. I haven't ever thought of IDs as being "secure." Instead, I've always treated them as untrusted, public-knowledge values. I've always built access controls around my IDs, even when they were randomly generated GUIDs. So I started looking at a lot of ID generators to see if this concept of "secure ids" really did exist, what meant, and what other properties IDs had. 
             </description>
         </article>
 
-        <!-- Published -->
         <article published="Yes"
                  title="Unsigned Integers in JavaScript"
                  author="auth:mtolman" time="2023-11-30T16:00:00-0700"
