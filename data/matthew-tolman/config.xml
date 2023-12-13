@@ -15,6 +15,15 @@
         <!-- In Progress -->
         <!-- Published -->
         <article published="Yes"
+            title="Creating a WASM library with Embind"
+            author="auth:mtolman" time="2023-12-13T09:30:00"
+            id="article:creating-a-wasm-library-with-embind"
+            file="creating-a-wasm-library-with-embind.md">
+            <description>
+                I've been working on my Test Jam project for a while. I had previously tried to do a WASM wrapper around my C/C++ build, but I ran into a memory leak which existed outside the C/C++ code. Instead of reading the manual, I rewrote the code in TypeScript. After the rewrite, I read the manual and learned what was the source of the leak. I then rebuilt my WASM wrapper and ended up with a TypeScript and WASM implementation. I then decided to start comparing the two implementations to see what the benefits and drawbacks are. I also wanted to test some well touted claims about WASM (e.g. performance, code reuse) in the context of a library.
+            </description>
+        </article>
+        <article published="Yes"
                  title="Overview of globally unique identifiers"
                  author="auth:mtolman" time="2023-12-02T16:12:00-0700"
                  id="article:overview-of-globally-unique-identifiers"
