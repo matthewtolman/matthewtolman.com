@@ -54,6 +54,20 @@ function generateBlogHtml(xmlFile, directory) {
 const globalScript = `<script>
 window.addEventListener('load', function () {
     loadSettings()
+    var expandables = document.querySelectorAll('.expandable')
+    for (var i = 0; i < expandables.length; ++i) {
+        const e = expandables[i]
+        e.addEventListener('click', function () {
+            e.classList.toggle("expanded")
+            const button = e.querySelector('button')
+            if (button.innerText === 'Collapse') {
+                button.innerText = 'Expand'
+            }
+            else {
+                button.innerText = 'Collapse'
+            }
+        })
+    }
 })
 
 function textFontToClass(font) {
@@ -205,12 +219,12 @@ function headerId(header, blog, references = {}, sections = [], count = '') {
   return content.replace(/[^a-zA-Z0-9_]/g, '--').toLowerCase() + '__' + count;
 }
 
-function generateTableCode(head, body) {
+function generateTableCode(head, body, contentToHtml) {
   let res = '<table>'
 
   res += "<thead><tr>"
   for (const headCell of head) {
-    res += "<th>" + headCell.replace(/\\n/g, "<br/>") + "</th>";
+    res += "<th>" + contentToHtml(headCell) + "</th>";
   }
   res += "</tr></thead>"
 
@@ -218,7 +232,7 @@ function generateTableCode(head, body) {
   for (const row of body) {
     res += "<tr>"
     for (const cell of row) {
-      res += `<td>${cell}</td>`
+      res += `<td>${contentToHtml(cell)}</td>`
     }
     res += "</tr>"
   }
@@ -236,10 +250,14 @@ function generateInlineCode(lang, code) {
 
 function generateCodeBlock(lang, code) {
   // We do an htmlDecode since the incoming content is htmlEncoded and hljs will do an additional htmlEncode
-  return `<pre><code class="hljs language-${htmlEncode(lang)}">${
-    hljs.highlight(htmlDecode(code), { language: lang }).value
-  }</code></pre>`;
-  // return
+  const c = hljs.highlight(htmlDecode(code), { language: lang }).value
+  const numLines = c.split("\n").length
+  if (numLines < 25) {
+    return `<pre><code class="hljs language-${htmlEncode(lang)}">${c}</code></pre>`;
+  }
+  else {
+    return `<div class="expandable"><pre><code class="hljs language-${htmlEncode(lang)}">${c}</code></pre><button>Expand</button></div>`;
+  }
 }
 
 
@@ -441,7 +459,9 @@ function contentToHtml(tokens, blog, references = {}, sections = []) {
           }
           break;
         case ArticleTokenType.TABLE:
-          res.push(generateTableCode(token.attrs.head, token.attrs.body));
+          res.push(generateTableCode(token.attrs.head, token.attrs.body, (body) => {
+            return contentToHtml(body.tokens, blog, references, sections).join('')
+          }));
           break;
       }
     }

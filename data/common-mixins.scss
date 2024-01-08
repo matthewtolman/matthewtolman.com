@@ -55,8 +55,17 @@
     word-spacing: $word-spacing;
   }
 
+  button {
+    font-size: $font-size;
+    font-size: var(--font-size);
+  }
+
   pre, code, .inline-code {
     font-family: $default-mono-font-family;
+  }
+
+  pre:after, code:after {
+    font-family: $default-font-family;
   }
 }
 
@@ -138,7 +147,7 @@
     min-height: calc(100vh - $nav-footer-height);
 
     article {
-      overflow-x: hidden;;
+      overflow-x: hidden;
     }
   }
 
@@ -367,6 +376,10 @@
 
 @mixin text-font($name, $font-family) {
   .#{$name}-text-font {
+    font-family: $font-family;
+  }
+
+  .#{$name}-text-font *:after {
     font-family: $font-family;
   }
 }

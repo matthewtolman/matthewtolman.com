@@ -5,6 +5,7 @@ const sassRender = require('sass').render;
 const { ArticleTokenType } = require('./types');
 const uglifyJs = require('uglify-js')
 const cleanCss = require('clean-css')
+const fs = require("fs");
 
 function parseBlog(fileName, blogId) {
   return readFile(fileName, 'UTF-8')
@@ -17,7 +18,7 @@ function parseBlog(fileName, blogId) {
         id: blogId,
         description: x.blog._attr.description,
         copyrightHolder: x.blog._attr['copyright-holder'],
-        icon: x.blog._attr.icon,
+        icon: fs.readFileSync(path.join(path.dirname(fileName), x.blog._attr.icon)),
         settingsTemplate: x.blog._attr['settings-template'] || 'settings-templ.mustache',
         fontsFolder: path.join(blogId, 'fonts'),
         baseUrl: x.blog._attr['base-url'],
@@ -284,7 +285,7 @@ function parse(str) {
   };
 
   const tokenRegex =
-    /(?<bold_italic>\*\*\*[\w \t\.,\(\)]+\*\*\*)|(?<bold>\*\*[\w \t\.,\(\)]+\*\*)|(?<italic>\*[\w \t\.,\(\)]+\*)|(?<list>^[^\S\r\n]*(?<list_char>[\*\-$])\s(?<list_text>.*))|((?<header_level>#{1,6})(?<header>.*))|(?<obj_link>\[\[[\w:\-]+]])|(?<link>\[(?<link_text>[^\]]+)\]\((?<link_ref>[^\)]+)\))|(?<ref>\^\[[\w-]+\])|(?<references>@References\n(\s*(?:\*\s*(?:[\w\-]+)(\s*\|\s*(?:[\w\-]+):\s*(?:[^\n]+))*))*)|~(?<elem>(?<elem_tag>\w+)(?<attrs>(::[\w-]+=(:?[^:])*?)+?)(::(?<content>.+?::~\/\w+))?:;)|(?<code_block>```(?:\w+)\n(?:(.|\n)*?)```)|(?<inline_code>`(?<inline_lang>\<\w+\>)?.*?`)|(?<toc>\[toc\])|(?<p_break>\n\n+)|(?<blockquote>(^>+.*\n)+)|(?<math>\$\$\n(?<math_equat>(\n|.)*?)\n\$\$)|(?<math_inline>\\\((?<math_equat_inline>.*?)\\\))|(?<table>(?<thead>(?:\|(?:[^|\\\n]|\\\||\\\\|\\n)*)+\|)\n(?<tdiv>(?:\|\-\-\-+)+\|)\n(?<trows>(?:(?:\|(?:[^|\\\n]|\\\||\\\\|\\n)*)+\|\n)+))|(?<escaped>\\.)|[\w\s\."',]+?|./gm;
+    /(?<bold_italic>\*\*\*[\w \t\.,\(\)]+\*\*\*)|(?<bold>\*\*[\w \t\.,\(\)]+\*\*)|(?<italic>\*[\w \t\.,\(\)]+\*)|(?<list>^[^\S\r\n]*(?<list_char>[\*\-$])\s(?<list_text>.*))|((?<header_level>#{1,6})(?<header>.*))|(?<obj_link>\[\[[\w:\-]+]])|(?<link>\[(?<link_text>[^\]]+)\]\((?<link_ref>[^\)]+)\))|(?<ref>\^\[[\w-]+\])|(?<references>@References\n(\s*(?:\*\s*(?:[\w\-]+)(\s*\|\s*(?:[\w\-]+):\s*(?:[^\n]+))*))*)|~(?<elem>(?<elem_tag>\w+)(?<attrs>(::[\w-]+=(:?[^:])*?)+?)?(::(?<content>.+?::~\/\w+))?:;)|(?<code_block>```(?:\w+)\n(?:(.|\n)*?)```)|(?<inline_code>`(?<inline_lang>\<\w+\>)?.*?`)|(?<toc>\[toc\])|(?<p_break>\n\n+)|(?<blockquote>(^>+.*\n)+)|(?<math>\$\$\n(?<math_equat>(\n|.)*?)\n\$\$)|(?<math_inline>\\\((?<math_equat_inline>.*?)\\\))|(?<table>(?<thead>(?:\|(?:[^|\\\n]|\\\||\\\\|\\n)*)+\|)\n(?<tdiv>(?:\|\-\-\-+)+\|)\n(?<trows>(?:(?:\|(?:[^|\\\n]|\\\||\\\\|\\n)*)+\|\n)+))|(?<escaped>\\.)|[\w\s\."',]+?|./gm;
 
   let match;
   while ((match = tokenRegex.exec(str)) !== null) {
@@ -488,12 +489,12 @@ function parseTableCells(line) {
   const res = []
   let match
   while ((match = cellRegex.exec(line)) !== null) {
-    res.push(
-        match.groups.content
-          .replace(/\\\|/g, "|")
-          .replace(/\\\\/g, "\\")
-          .trim()
-    )
+    const inner = match.groups.content
+        .replace(/\\\|/g, "|")
+        .replace(/\\\\/g, "\\")
+        .replace("\\n", "~br:;")
+        .trim()
+    res.push(parse(inner))
   }
   return res
 }
