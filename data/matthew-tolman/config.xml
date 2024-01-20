@@ -118,6 +118,7 @@
         <copy src="android-chrome-512x512.png"/>
         <copy src="android-chrome-192x192.png"/>
         <copy src="site.webmanifest"/>
+        <copy src="robots.txt"/>
     </assets>
     <portfolio>
 
