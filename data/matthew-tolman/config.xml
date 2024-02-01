@@ -6,6 +6,12 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <!-- Published -->
+        <article published="Yes" title="A site for my experiments" author="auth:mtolman" time="2024-02-01T17:10:00" id="article:a-site-for-my-experiments" file="a-site-for-my-experiments.md">
+            <description>
+                I recently created a website which holds a lot of my experiments. Some of these experiments either make it into my blog or they form the basis of some of my blog posts. Many of them don't make it into my blog posts. Instead of just letting them sit in the dark, I decided to put some of them on my experiments site.
+            </description>
+        </article>
+
         <!-- In Progress -->
         <article published="Yes" title="C++ to JavaScript with Cheerp" author="auth:mtolman" time="2024-01-07T22:50:00" id="article:cpp-to-javascript-with-cheerp" file="cpp-to-javascript-with-cheerp.md">
             <description>
