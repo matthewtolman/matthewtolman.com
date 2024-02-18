@@ -174,6 +174,8 @@ function addAuthors([xml, blog]) {
           return {
             id: author._attr.id,
             name: author._attr.name,
+            profileImg: author._attr['profile-img'],
+            link: author._attr.link
           };
         })
         .reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {}),
@@ -285,7 +287,7 @@ function parse(str) {
   };
 
   const tokenRegex =
-    /(?<bold_italic>\*\*\*[\w \t\.,\(\)]+\*\*\*)|(?<bold>\*\*[\w \t\.,\(\)]+\*\*)|(?<italic>\*[\w \t\.,\(\)]+\*)|(?<list>^[^\S\r\n]*(?<list_char>[\*\-$])\s(?<list_text>.*))|((?<header_level>#{1,6})(?<header>.*))|(?<obj_link>\[\[[\w:\-]+]])|(?<link>\[(?<link_text>[^\]]+)\]\((?<link_ref>[^\)]+)\))|(?<ref>\^\[[\w-]+\])|(?<references>@References\n(\s*(?:\*\s*(?:[\w\-]+)(\s*\|\s*(?:[\w\-]+):\s*(?:[^\n]+))*))*)|~(?<elem>(?<elem_tag>\w+)(?<attrs>(::[\w-]+=(:?[^:])*?)+?)?(::(?<content>.+?::~\/\w+))?:;)|(?<code_block>```(?:\w+)\n(?:(.|\n)*?)```)|(?<inline_code>`(?<inline_lang>\<\w+\>)?.*?`)|(?<toc>\[toc\])|(?<p_break>\n\n+)|(?<blockquote>(^>+.*\n)+)|(?<math>\$\$\n(?<math_equat>(\n|.)*?)\n\$\$)|(?<math_inline>\\\((?<math_equat_inline>.*?)\\\))|(?<table>(?<thead>(?:\|(?:[^|\\\n]|\\\||\\\\|\\n)*)+\|)\n(?<tdiv>(?:\|\-\-\-+)+\|)\n(?<trows>(?:(?:\|(?:[^|\\\n]|\\\||\\\\|\\n)*)+\|\n)+))|(?<escaped>\\.)|[\w\s\."',]+?|./gm;
+    /(?<bold_italic>\*\*\*[\w \t\.,\(\)]+\*\*\*)|(?<bold>\*\*[\w \t\.,\(\)]+\*\*)|(?<italic>\*[\w \t\.,\(\)]+\*)|(?<list>^[^\S\r\n]*(?<list_char>[\*\-$])\s(?<list_text>.*))|((?<header_level>#{1,6})(?<header>.*))|(?<obj_link>\[\[[\w:\-]+]])|(?<link>\[(?<link_text>[^\]]+)\]\((?<link_ref>[^\)]+)\))|(?<ref>\^\[[\w-]+\])|(?<references>@References\n(\s*(?:\*\s*(?:[\w\-]+)(\s*\|\s*(?:[\w\-]+):\s*(?:[^\n]+))*))*)|~(?<elem>(?<elem_tag>\w+)(?<attrs>(::[\w-]+=(:?[^:])*?)+?)?(::(?<content>.+?::~\/\w+))?:;)|(?<code_block>```(?:\w+)\n(?:(.|\n)*?)```)|(?<inline_code>`(?<inline_lang>\<\w+\>)?.*?`)|(?<toc>\[toc\])|(?<p_break>\r?\n\r?\n+)|(?<blockquote>(^>+.*\n)+)|(?<math>\$\$\n(?<math_equat>(\n|.)*?)\n\$\$)|(?<math_inline>\\\((?<math_equat_inline>.*?)\\\))|(?<table>(?<thead>(?:\|(?:[^|\\\n]|\\\||\\\\|\\n)*)+\|)\n(?<tdiv>(?:\|\-\-\-+)+\|)\n(?<trows>(?:(?:\|(?:[^|\\\n]|\\\||\\\\|\\n)*)+\|\n)+))|(?<escaped>\\.)|[\w\s\."',]+?|./gm;
 
   let match;
   while ((match = tokenRegex.exec(str)) !== null) {
@@ -426,7 +428,7 @@ function parse(str) {
 }
 
 function parseCodeBlock(str) {
-  const regex = /```(?<code_type>\w+)\n(?<code>(.|\n)*)```/gm;
+  const regex = /```(?<code_type>\w+)\r?\n(?<code>(.|\n)*)```/gm;
   let m;
 
   while ((m = regex.exec(str)) !== null) {
@@ -492,7 +494,7 @@ function parseTableCells(line) {
     const inner = match.groups.content
         .replace(/\\\|/g, "|")
         .replace(/\\\\/g, "\\")
-        .replace("\\n", "~br:;")
+        .replace(/\r?\n/g, "~br:;")
         .trim()
     res.push(parse(inner))
   }

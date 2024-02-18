@@ -16,9 +16,14 @@
             <nav>{{{navigation}}}</nav>
             <main id="main" class="post">
                 <h1>{{title}}</h1>
-                <div class="author">Written by {{author.name}}</div>
-                Published: <time datetime="{{time}}" id="time-display">{{time}}</time>
-                <div class="reading-time">Estimated reading time: {{reading_time}}</div>
+                <div class="article-meta">
+                  <img src="/{{author.profileImg}}" alt="Picture of {{author.name}}" />
+                  <div>
+                    <div class="author">Written by <a target="_blank" href="{{author.link}}">{{author.name}}</a></div>
+                    Published: <time datetime="{{time}}" id="time-display">{{time}}</time>
+                    <div class="reading-time">Estimated reading time: {{reading_time}}</div>
+                  </div>
+                </div>
                 <script>if (window.Intl && window.Intl.DateTimeFormat) { document.getElementById('time-display').innerText = (new window.Intl.DateTimeFormat()).format(new Date('{{time}}')) }</script>
                 <article>
                     {{{content}}}

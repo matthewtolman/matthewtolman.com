@@ -593,7 +593,7 @@ function generateArticleHtml([blog, files]) {
             ...article,
             time: format(article.time, dateFormat),
             content: articleToHtml(article.content, blog),
-            reading_time: readingTime(articleToText(article.content, blog))
+            reading_time: readingTime(articleToText(article.content, blog)),
           })),
           fileName: path.join(...`${article.id}.html`.split(':')),
         };

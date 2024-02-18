@@ -545,3 +545,14 @@ code.hljs {
   display: none;
 }
 
+.article-meta {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: flex-start;
+  img {
+    border-radius: 50%;
+    max-height: 5em;
+    margin-right: 1em
+  }
+}
