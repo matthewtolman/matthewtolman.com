@@ -6,12 +6,16 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <!-- In Progress -->
+        <article published="No" title="A return to Clojure" author="auth:mtolman" time="2024-04-30T20:00:00" id="article:2024-04-a-return-to-clojure" file="2024-04-a-return-to-clojure.md">
+            <decription>
+            </description>
+        </article>
+        <!-- Published -->
         <article published="Yes" title="A journey across editors" author="auth:mtolman" time="2024-02-17T20:35:00" id="article:journey-across-ides-02-2024" file="journey-across-ides-02-2024.md">
             <description>
                 Often I hear developer journeys through the programming languages they used or the companies they worked for. Sometimes it's told through frameworks learned or projects released or mistakes made. I'll probably tell my story a few times using some of those common methods. But today I thought I'd do something different.
             </description>
         </article>
-        <!-- Published -->
         <article published="Yes" title="A site for my experiments" author="auth:mtolman" time="2024-02-01T17:10:00" id="article:a-site-for-my-experiments" file="a-site-for-my-experiments.md">
             <description>
                 I recently created a website which holds a lot of my experiments. Some of these experiments either make it into my blog or they form the basis of some of my blog posts. Many of them don't make it into my blog posts. Instead of just letting them sit in the dark, I decided to put some of them on my experiments site.
