@@ -6,11 +6,12 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <!-- In Progress -->
-        <article published="No" title="A return to Clojure" author="auth:mtolman" time="2024-04-30T20:00:00" id="article:2024-04-a-return-to-clojure" file="2024-04-a-return-to-clojure.md">
-            <decription>
+        <!-- Published -->
+        <article published="Yes" title="A return to Clojure" author="auth:mtolman" time="2024-06-15T20:00:00" id="article:2024-04-a-return-to-clojure" file="2024-04-a-return-to-clojure.md">
+            <description>
+                Recently I started using Clojure again. It's been a while since I've used it. I'm recording my thoughts and impressions as I get back to using it. The experience doesn't feel like it changed much over the past few years, which is both good and bad. This is more of a post of my thoughts rather than having a clear direction.
             </description>
         </article>
-        <!-- Published -->
         <article published="Yes" title="A journey across editors" author="auth:mtolman" time="2024-02-17T20:35:00" id="article:journey-across-ides-02-2024" file="journey-across-ides-02-2024.md">
             <description>
                 Often I hear developer journeys through the programming languages they used or the companies they worked for. Sometimes it's told through frameworks learned or projects released or mistakes made. I'll probably tell my story a few times using some of those common methods. But today I thought I'd do something different.
