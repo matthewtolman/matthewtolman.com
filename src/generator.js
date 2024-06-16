@@ -205,7 +205,7 @@ function blogMustacheBase(blog) {
 <style>.settings-link-li{display:none;}</style>
 </noscript>`,
     copyright: `${blog.copyrightHolder}, ${new Date().getFullYear()}`,
-    privacyStatement: `Privacy Policy: We don't set cookies or add analytics to our website.`,
+    privacyStatement: `Privacy Policy: We don't set cookies or add analytics code to our website. We're hosted on Cloudflare which does aggregated tracking.`,
     rssLink: `<a href="/feed">RSS Feed</a>`
   };
 }
