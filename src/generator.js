@@ -112,12 +112,6 @@ function loadSettings() {
             document.documentElement.style.setProperty('--font-size', localStorage.getItem('fontSize') + '%')
         }
         
-        if (localStorage.getItem('js_polyfill') === 'true' && document.querySelector('.math-fallback')) {
-            var ps = document.createElement('script')
-            ps.src = 'https://polyfill.io/v3/polyfill.min.js?features=es6'
-            document.body.appendChild(ps)
-        }
-        
         if (localStorage.getItem('js_mathJax') === 'true' && document.querySelector('.math-fallback')) {
             var ms = document.createElement('script')
             ms.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
@@ -736,9 +730,6 @@ function helloWolrd() {
         <div>
             <input onchange="updateMathJax()" type="checkbox" id="load-mathjax"><label for="increased-letter-space"> Load <a href="https://www.mathjax.org/" target="_blank">MathJax</a> from <a href="https://www.jsdelivr.com/" target="_blank">jsdelivr.com</a> (provides accessibility and interactivity to math equations)</label>
         </div>
-        <div>
-            <input onchange="updatePolyfill()" type="checkbox" id="load-polyfill"><label for="increased-letter-space"> Load <a href="https:/polyfill.io/" target="_blank">Pollyfill.io</a> from polyfill.io (helps fix bugs and issues in older browsers)</label>
-        </div>
     </fieldset>
 </form>
 <script>
@@ -749,11 +740,6 @@ function updateTheme() {
 
 function updateMathJax() {
     localStorage.setItem('js_mathJax', document.getElementById('load-mathjax').checked)
-    loadSettings()
-}
-
-function updatePolyfill() {
-    localStorage.setItem('js_polyfill', document.getElementById('load-polyfill').checked)
     loadSettings()
 }
 
@@ -807,7 +793,6 @@ window.addEventListener('load', function () {
     document.getElementById('increased-line-height').checked = localStorage.getItem('increaseLineHeight') === 'true'
     document.getElementById('increased-paragraph-spacing').checked = localStorage.getItem('increaseParagraphSpace') === 'true'
     document.getElementById('load-mathjax').checked = localStorage.getItem('js_mathJax') === 'true'
-    document.getElementById('load-polyfill').checked = localStorage.getItem('js_polyfill') === 'true'
     document.getElementById('render-font-size').value = localStorage.getItem('fontSize') || 100
     document.getElementById('theme-select').value = localStorage.getItem('theme') || ''
 })
