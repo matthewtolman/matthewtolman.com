@@ -7,6 +7,11 @@
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <!-- In Progress -->
         <!-- Published -->
+        <article published="Yes" title="Venture into Erlang" author="auth:mtolman" time="2024-06-28T20:00:00" id="article:2024-06-28-foray-into-erlang" file="2024-06-28-foray-into-erlang.md">
+            <description>
+                Recently I've been exploring Erlang and the OTP. As I've been trying things out, some aspects of the design Erlang and the OTP have finally started to click. I'm writing this blog post about my experiences with Erlang and the OTP so far.
+            </description>
+        </article>
         <article published="Yes" title="A return to Clojure" author="auth:mtolman" time="2024-06-15T20:00:00" id="article:2024-04-a-return-to-clojure" file="2024-04-a-return-to-clojure.md">
             <description>
                 Recently I started using Clojure again. It's been a while since I've used it. I'm recording my thoughts and impressions as I get back to using it. The experience doesn't feel like it changed much over the past few years, which is both good and bad. This is more of a post of my thoughts rather than having a clear direction.
