@@ -6,7 +6,17 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <!-- In Progress -->
+        <!-- <article published="No" title="Shortcomings of Go Concurrency" author="auth:mtolman" time="2024-11-30T20:00:00" id="article:2024-11-shortcomings-of-go-concurrency" file="2024-11-shortcomings-of-go-concurrency.md"> -->
+        <!--     <description> -->
+        <!--     </description> -->
+        <!-- </article> -->
+        
         <!-- Published -->
+        <article published="Yes" title="TigerBeetle and NASA reliability" author="auth:mtolman" time="2024-10-31T00:00:00" id="article:2024-10-tigerbeetle-and-nasa-reliability" file="2024-10-tigerbeetle-and-nasa-reliability.md">
+            <description>
+Last time I posted I talked about Erlang and how it has built-in error recovery to maintain reliable systems. Since that post I've been digging into Zig after learning about how TigerBeetle and NASA maintain reliable systems. Their approach is the polar opposite of Erlang's approach, yet the results were impressive. The reason for the different approaches stems from different definitions and needs of "reliability."
+            </description>
+        </article>
         <article published="Yes" title="Venture into Erlang" author="auth:mtolman" time="2024-06-28T20:00:00" id="article:2024-06-28-foray-into-erlang" file="2024-06-28-foray-into-erlang.md">
             <description>
                 Recently I've been exploring Erlang and the OTP. As I've been trying things out, some aspects of the design Erlang and the OTP have finally started to click. I'm writing this blog post about my experiences with Erlang and the OTP so far.
