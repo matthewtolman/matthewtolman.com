@@ -11,7 +11,7 @@
         <!--     </description> -->
         <!-- </article> -->
         <!-- Published -->
-        <article published="Yes" title="Fast CSV parsing in Zig" author="auth:mtolman" time="2024-11-05T00:00:00" id="article:2024-11-fast-csv-parsing-in-zig" file="2024-11-fast-csv-parsing-in-zig.md">
+        <article published="Yes" title="Fast CSV parsing in Zig" author="auth:mtolman" time="2024-11-07T00:00:00" id="article:2024-11-fast-csv-parsing-in-zig" file="2024-11-fast-csv-parsing-in-zig.md">
             <description>
                 I started off trying to create a streaming CSV encoder in Zig. Once that was done, I thought "that was easy, how hard could a parser be?" I then started trying to make it faster and faster, and ended up creating several parsers (some that are zero-allocation parsers, some that aren't). This post covers my journey into optimizing Zig code.
             </description>
