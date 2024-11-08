@@ -27,7 +27,7 @@ module.exports = function(hljs) {
         // type
         'noreturn type anyerror anyframe ' +
         'void comptime_int comptime_float ' +
-        'bool isize usize ' +
+        'bool isize usize' +
         'f16 f32 f64 f128 ' +
         // C type
         'c_short c_ushort c_int c_uint c_long c_ulong c_longlong c_ulonglong c_longdouble c_void';

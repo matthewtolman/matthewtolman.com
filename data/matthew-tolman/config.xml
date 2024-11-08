@@ -10,11 +10,15 @@
         <!--     <description> -->
         <!--     </description> -->
         <!-- </article> -->
-        
         <!-- Published -->
+        <article published="Yes" title="Fast CSV parsing in Zig" author="auth:mtolman" time="2024-11-05T00:00:00" id="article:2024-11-fast-csv-parsing-in-zig" file="2024-11-fast-csv-parsing-in-zig.md">
+            <description>
+                I started off trying to create a streaming CSV encoder in Zig. Once that was done, I thought "that was easy, how hard could a parser be?" I then started trying to make it faster and faster, and ended up creating several parsers (some that are zero-allocation parsers, some that aren't). This post covers my journey into optimizing Zig code.
+            </description>
+        </article>
         <article published="Yes" title="TigerBeetle and NASA reliability" author="auth:mtolman" time="2024-10-31T00:00:00" id="article:2024-10-tigerbeetle-and-nasa-reliability" file="2024-10-tigerbeetle-and-nasa-reliability.md">
             <description>
-Last time I posted I talked about Erlang and how it has built-in error recovery to maintain reliable systems. Since that post I've been digging into Zig after learning about how TigerBeetle and NASA maintain reliable systems. Their approach is the polar opposite of Erlang's approach, yet the results were impressive. The reason for the different approaches stems from different definitions and needs of "reliability."
+                Last time I posted I talked about Erlang and how it has built-in error recovery to maintain reliable systems. Since that post I've been digging into Zig after learning about how TigerBeetle and NASA maintain reliable systems. Their approach is the polar opposite of Erlang's approach, yet the results were impressive. The reason for the different approaches stems from different definitions and needs of "reliability."
             </description>
         </article>
         <article published="Yes" title="Venture into Erlang" author="auth:mtolman" time="2024-06-28T20:00:00" id="article:2024-06-28-foray-into-erlang" file="2024-06-28-foray-into-erlang.md">

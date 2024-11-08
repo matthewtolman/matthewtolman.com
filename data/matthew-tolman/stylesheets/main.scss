@@ -490,6 +490,23 @@ code.hljs {
   cursor: pointer;
 }
 
+@media print {
+  .expandable{
+    display: inline;
+    max-height: unset;
+    overflow: visible;
+  }
+  .expandable button{
+    display: none
+  }
+  .expandable code{
+    padding-bottom: 0.5em;
+  }
+  .expandable:after{
+    display: none
+  }
+}
+
 .expandable:after {
   content: "";
   position: absolute;

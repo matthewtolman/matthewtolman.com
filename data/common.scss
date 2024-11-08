@@ -15,6 +15,12 @@
 // Styles
 //////////////////////////
 
+@media print {
+  header, nav, #privacy-policy {
+    display: none;
+  }
+}
+
 .desktop-only {
   @include for-tablet-landscape-down {
     display: none;
