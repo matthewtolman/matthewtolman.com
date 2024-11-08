@@ -8,6 +8,8 @@ To start off, I decided to create a simple parser I could use as a performance b
 
 Overall, this did well. I was able to parse a 12MB file in **57ms** in release mode on my old Intel-based MacBook Pro.
 
+> Note: For all benchmarks, I'm using the same machine, same release config, and I'm pre-loading the file in memory.
+
 Below is a usage example of my parser:
 
 ```zig
