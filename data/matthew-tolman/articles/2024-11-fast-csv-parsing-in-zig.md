@@ -6,7 +6,7 @@ The first thing I did was look at the Zig standard library, but I couldn't find 
 
 To start off, I decided to create a simple parser I could use as a performance baseline. For my baseline, I kept it simple and operated on an array of bytes instea of operating on a reader. I also didn't decode CSV values. Instead, I returned a slice pointing to the location of each field in the input bytes. I also used an iterator so I could parse row by row instead of parsing the entire CSV file. This let me lazily parse only what I needed while also minimizing memory usage. This became what I called my ["raw" parser](https://github.com/matthewtolman/zig_csv/blob/82731a2d82ccc37a3332c8bd96daa145a149f1fa/src/raw.zig).
 
-Overall, this did well. I was able to parse a 12MB file in 57ms in release mode on my old Intel-based MacBook Pro.
+Overall, this did well. I was able to parse a 12MB file in **57ms** in release mode on my old Intel-based MacBook Pro.
 
 Below is a usage example of my parser:
 
@@ -54,7 +54,7 @@ Unfortunately, readers don't have a memory address I could use as a return resul
 
 There was one flaw with this approach though. I can only send individual bytes through a writer. This meant I would either need to have a delimiter between fields (and another parser) to find the fields in a row, or I would need to move from parsing rows to parsing fields. I chose the later. I also added a flag to the parser to indicate whether the last field parsed was the last field on a row.
 
-This became my ["field stream" parser or "stream" for short](https://github.com/matthewtolman/zig_csv/blob/82731a2d82ccc37a3332c8bd96daa145a149f1fa/src/stream.zig). It was able to parse the same 12MB file in 100ms. I don't know where the slowdown was (e.g. reader interface, copy, decoding, etc). However, what I did was make this my second baseline for any reader-based parsers.
+This became my ["field stream" parser or "stream" for short](https://github.com/matthewtolman/zig_csv/blob/82731a2d82ccc37a3332c8bd96daa145a149f1fa/src/stream.zig). It was able to parse the same 12MB file in **100ms**. I don't know where the slowdown was (e.g. reader interface, copy, decoding, etc). However, what I did was make this my second baseline for any reader-based parsers.
 
 Below is example usage code:
 
@@ -283,7 +283,7 @@ Instead of fixing my SIMD code, I replaced it with a loop that compared each cha
 
 ### Minor gains
 
-Once I got my SIMD algorithm figured out, I adapted it to the reader/writer pattern. The final time for the adapted SIMD pattern was 25ms.
+Once I got my SIMD algorithm figured out, I adapted it to the reader/writer pattern. The final time for the adapted SIMD pattern was **25ms**. And that time is with field decoding.
 
 I then switched my allocating column parser from using the (slower) field stream to the new SIMD field stream to save around 75ms (out of 2 full seconds).
 
