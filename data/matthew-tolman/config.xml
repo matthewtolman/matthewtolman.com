@@ -6,11 +6,14 @@
     </categories>
     <articles articleTemplate="article-templ.mustache" listTemplate="list-templ.mustache">
         <!-- In Progress -->
-        <!-- <article published="No" title="Shortcomings of Go Concurrency" author="auth:mtolman" time="2024-11-30T20:00:00" id="article:2024-11-shortcomings-of-go-concurrency" file="2024-11-shortcomings-of-go-concurrency.md"> -->
-        <!--     <description> -->
-        <!--     </description> -->
-        <!-- </article> -->
         <!-- Published -->
+
+        <article published="Yes" title="Why I Stopped Using Go (For Now)" author="auth:mtolman" time="2024-12-11T16:30:00" id="article:2024-11-shortcomings-of-go-concurrency" file="2024-12-why-i-stopped-using-go.md">
+            <description>
+                I used go for several months for all of my side projects. I began rewriting different projects in Go. I was amazed by how quickly I was able to get things done in Go.
+                Go as a productivity tool began to click. But suddenly, I stopped and moved on to a language that wasn't mature, or stable, or had an ecosystem. What happened?
+            </description>
+        </article>
         <article published="Yes" title="Fast CSV parsing in Zig" author="auth:mtolman" time="2024-11-07T17:12:00" id="article:2024-11-fast-csv-parsing-in-zig" file="2024-11-fast-csv-parsing-in-zig.md">
             <description>
                 I started off trying to create a streaming CSV encoder in Zig. Once that was done, I thought "that was easy, how hard could a parser be?" I then started trying to make it faster and faster, and ended up creating several parsers (some that are zero-allocation parsers, some that aren't). This post covers my journey into optimizing Zig code.
