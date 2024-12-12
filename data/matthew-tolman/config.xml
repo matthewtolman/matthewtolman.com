@@ -8,7 +8,7 @@
         <!-- In Progress -->
         <!-- Published -->
 
-        <article published="Yes" title="Why I Stopped Using Go (For Now)" author="auth:mtolman" time="2024-12-11T16:30:00" id="article:2024-11-shortcomings-of-go-concurrency" file="2024-12-why-i-stopped-using-go.md">
+        <article published="Yes" title="Why I Stopped Using Go (For Now)" author="auth:mtolman" time="2024-12-12T15:15:00-07:00" id="article:2024-11-shortcomings-of-go-concurrency" file="2024-12-why-i-stopped-using-go.md">
             <description>
                 I used go for several months for all of my side projects. I began rewriting different projects in Go. I was amazed by how quickly I was able to get things done in Go.
                 Go as a productivity tool began to click. But suddenly, I stopped and moved on to a language that wasn't mature, or stable, or had an ecosystem. What happened?
